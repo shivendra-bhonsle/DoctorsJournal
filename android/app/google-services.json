@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "69835557982",
+    "project_id": "doctor-s-diary-2e628",
+    "storage_bucket": "doctor-s-diary-2e628.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69835557982:android:985c97869c811f421ff8cf",
+        "android_client_info": {
+          "package_name": "com.project.doctors_diary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "69835557982-l8iu4d0ruvr2sl6be2gad9525ft1dk15.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQzNJMCpmeDQBrkitKVTBMA8vLVCLQ2Rg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "69835557982-l8iu4d0ruvr2sl6be2gad9525ft1dk15.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

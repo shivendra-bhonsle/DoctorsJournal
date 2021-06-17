@@ -16,7 +16,7 @@ class HomeTemp extends StatelessWidget {
             onPressed: () {},
             icon: Icon(Icons.menu)
         ),
-        title: Text("Doctor's Diary"),
+        title: Text("Appointments Today"),
         centerTitle: true,
         backgroundColor: Colors.indigo[900],
         actions: <Widget>[

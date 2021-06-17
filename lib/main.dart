@@ -1,4 +1,5 @@
-import 'package:doctors_diary/screens/home_temp.dart';
+import 'package:doctors_diary/screens/about_page.dart';
+import 'package:doctors_diary/screens/tempWrapper.dart';
 //import 'package:doctors_diary/shared/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
           seconds: 4,
           imageBackground: AssetImage('images/Android - 1spalshscreen_figma.png'),
           loaderColor: Colors.blue[300],
-          navigateAfterSeconds: HomeTemp(),
+          navigateAfterSeconds: AboutPage(),
         ),
         ),
       )

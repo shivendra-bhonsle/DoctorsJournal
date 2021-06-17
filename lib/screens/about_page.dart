@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:doctors_diary/screens/authenticate/loginScreen.dart';
 import 'package:doctors_diary/screens/tempWrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:swipe_up/swipe_up.dart';
@@ -16,7 +17,7 @@ class _AboutPageState extends State<AboutPage> {
       color: Colors.black,
       sensitivity: 0.5,
       onSwipe: (){
-        Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) => TempWrapper()));   //swipe up navigate to
+        Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => LoginScreen()));   //swipe up navigate to
       },
       child: Material(
         color: Colors.transparent,

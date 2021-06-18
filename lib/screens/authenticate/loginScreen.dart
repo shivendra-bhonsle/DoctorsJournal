@@ -1,5 +1,6 @@
 import 'package:doctors_diary/screens/authenticate/registerScreen.dart';
-import 'package:doctors_diary/screens/home_temp.dart';
+import 'package:doctors_diary/screens/home/home_temp.dart';
+import 'package:doctors_diary/shared/Loading.dart';
 import 'package:doctors_diary/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -104,13 +105,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                   child: Text('Sign In'),
                   style: ElevatedButton.styleFrom(primary: Colors.pink),
-                ) : CircularProgressIndicator(
-                  backgroundColor:
-                  Theme
-                      .of(context)
-                      .primaryColor,
+                ) : Loading(),
 
-                ),
               ),
               SizedBox(height: 10.0,),
               Container(
@@ -269,20 +265,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: ElevatedButton.styleFrom(primary: Colors.pink),
 
                 ),
-              ):Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        CircularProgressIndicator(
-                          backgroundColor:
-                          Theme.of(context).primaryColor,
-                        )
-                      ].where((c) => c != null).toList(),
-                    )
-                  ]),
+              ):Loading(),
+
               isResend
                   ? Container(
                   margin: EdgeInsets.only(top: 40, bottom: 5),

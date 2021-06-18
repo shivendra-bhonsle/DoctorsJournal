@@ -4,7 +4,7 @@ import 'package:doctors_diary/screens/authenticate/loginScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'home_temp.dart';
+import 'home/home_temp.dart';
 
 //this class will tell where control will go to home screen or Authentication
 

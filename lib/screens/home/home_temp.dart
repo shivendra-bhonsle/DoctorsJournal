@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/rendering.dart';
 import 'package:doctors_diary/screens/wrapper.dart';
 import 'package:doctors_diary/shared/appointment_cards.dart';
-import 'package:doctors_diary/shared/menu_bar.dart';
+import 'package:doctors_diary/navigationBar/menu_bar.dart';
 
 Widget appointments(){
   return Appointment();

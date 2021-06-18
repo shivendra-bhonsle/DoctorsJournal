@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:doctors_diary/shared/profile_page.dart';
-import 'package:doctors_diary/shared/patient_list_page.dart';
-import 'package:doctors_diary/shared/Calender_page.dart';
-import 'package:doctors_diary/shared/Settings_page.dart';
-import 'package:doctors_diary/shared/Developers_page.dart';
+import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
+import 'package:doctors_diary/navigationBar/pages/patient_list_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Calender_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Developers_page.dart';
 
 class MenuBar extends StatelessWidget {
   const MenuBar({Key? key}) : super(key: key);

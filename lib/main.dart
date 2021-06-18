@@ -1,6 +1,5 @@
 import 'package:doctors_diary/screens/about_page.dart';
-import 'package:doctors_diary/screens/tempWrapper.dart';
-import 'package:doctors_diary/screens/home_temp.dart';
+import 'package:doctors_diary/screens/home/home_temp.dart';
 import 'package:doctors_diary/screens/wrapper.dart';
 //import 'package:doctors_diary/shared/splash_screen.dart';
 import 'package:flutter/material.dart';

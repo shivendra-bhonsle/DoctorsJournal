@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:doctors_diary/screens/authenticate/loginScreen.dart';
-import 'package:doctors_diary/screens/tempWrapper.dart';
+
 import 'package:flutter/material.dart';
 import 'package:swipe_up/swipe_up.dart';
 

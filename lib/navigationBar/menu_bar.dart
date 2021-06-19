@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
-import 'package:doctors_diary/navigationBar/pages/patient_list_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Calender_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Developers_page.dart';

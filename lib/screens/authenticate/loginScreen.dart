@@ -129,36 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 
 
-                /*margin: EdgeInsets.only(top: 15, bottom: 5),
-                alignment: AlignmentDirectional.center,
-                child: Padding(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10.0),
-                            child: Text(
-                              "No Account ?",
-                            )),
-                        InkWell(
-                          child: Text(
-                            'Sign up',
-                          ),
-                          onTap: () =>
-                          {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        RegisterScreen()))
-                          },
-                        ),
-                      ],
-                    )),*/
+
 
               )
 

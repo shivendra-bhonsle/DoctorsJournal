@@ -50,11 +50,14 @@ class _WrapperState extends State<Wrapper> {
 }
 */
 
+final FirebaseAuth _auth = FirebaseAuth.instance;
+
 class Wrapper extends StatelessWidget {
   const Wrapper({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return AboutPage();
+    //return AboutPage();
+    return _auth.currentUser==null? AboutPage():HomeTemp();
   }
 }

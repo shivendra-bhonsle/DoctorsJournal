@@ -7,7 +7,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:collection/collection.dart';
 
 import 'contactList.dart';
-
+//MAIN PAGE FOR CONTACTS
 class PatientList extends StatefulWidget {
   const PatientList({Key? key}) : super(key: key);
 
@@ -16,8 +16,8 @@ class PatientList extends StatefulWidget {
 }
 
 class _PatientListState extends State<PatientList> {
-  List<AppContact> contacts=[];//this list will show all contacts
-  List<AppContact> contactsFiltered=[];//this list will show filtered contacts
+  List<AppContact?> contacts=[];//this list will show all contacts
+  List<AppContact?> contactsFiltered=[];//this list will show filtered contacts
   bool contactsLoaded = false;
 
   TextEditingController searchController=new TextEditingController(); //assigning a controller for search bar
@@ -25,7 +25,7 @@ class _PatientListState extends State<PatientList> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    getPermissions();
+    getPermissions();//to get permissions fro the user as so as app initialises
 
   }
   String flattenPhoneNumber(String phoneStr){
@@ -35,9 +35,10 @@ class _PatientListState extends State<PatientList> {
     }); //Replaces anything that is not a number with an empty string
   }
   getPermissions() async {
-    if(await Permission.contacts.request().isGranted){
+    if(await Permission.contacts.request().isGranted){//if permission is granted
         getAllContacts();//initialising method to get all contacts
-        searchController.addListener(() {
+
+        searchController.addListener(() {//whenever there is change in search bar filter the contacts
           filterContacts();
         });
     }
@@ -49,18 +50,28 @@ class _PatientListState extends State<PatientList> {
       Colors.indigo,
       Colors.yellow,
       Colors.orange
-    ];*/
-    int colorIndex = 0;
-    List<AppContact> _contacts = (await ContactsService.getContacts()).map((contact){
+    ];
+    int colorIndex = 0;*/
+    List<AppContact?> _contacts = (await ContactsService.getContacts()).map((contact){//to get contacts from main contact app and map each contact
     /*Color baseColor = colors[colorIndex];
     colorIndex++;
     if (colorIndex == colors.length) {
       colorIndex = 0;
     }*/
-    return new AppContact(info: contact,);
-    }).toList();
+      if( contact.givenName==null){
+        return null;
+      }
+      return new AppContact(info: contact,);
+
+
+      //return a object appContact
+    }).toList();//convert to list
+    print(_contacts);
+    _contacts.removeWhere((element) => element==null);
+    print(_contacts);
+
     setState(() {
-      contacts=_contacts;
+      contacts=_contacts; //setting contacts to global variable
       contactsLoaded = true;
     });
 
@@ -68,13 +79,13 @@ class _PatientListState extends State<PatientList> {
   }
 
   filterContacts(){
-    List<AppContact> _contacts=[];
+    List<AppContact?> _contacts=[];
     _contacts.addAll(contacts);
-    if(searchController.text.isNotEmpty){//it removes all the items form the list which fails to pass the condition given
-      _contacts.retainWhere((contact) {
+    if(searchController.text.isNotEmpty){
+      _contacts.retainWhere((contact) {//it removes all the items form the list which fails to pass the condition given
         String searchTerm=searchController.text.toLowerCase();
         String searchTermFlatten=flattenPhoneNumber(searchTerm);
-        String contactName=contact.info!.displayName!.toLowerCase();
+        String contactName=contact!.info!.displayName!.toLowerCase();
         bool nameMatches=contactName.contains(searchTerm);
         if(nameMatches==true){
           return true;
@@ -82,7 +93,7 @@ class _PatientListState extends State<PatientList> {
         if(searchTermFlatten.isEmpty){
           return false;
         }
-        var phone=contact.info!.phones!.firstWhereOrNull((phn) {
+        var phone=contact.info!.phones!.firstWhereOrNull((phn) {//give the first result whichever matches else null
           String phnFlatten=flattenPhoneNumber(phn.value.toString());
           return phnFlatten.contains(searchTermFlatten);
         });
@@ -115,12 +126,12 @@ class _PatientListState extends State<PatientList> {
         centerTitle: true,
         backgroundColor: Colors.indigo[900],
       ),
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(//to add a new contact
         onPressed: () async{
           try {
-            Contact contact=await ContactsService.openContactForm();
+            Contact contact=await ContactsService.openContactForm();//open new contact page in system contact app
             if(contact!=null){
-              getAllContacts();
+              getAllContacts();//reload patientList after contact is added
             }
           } on FormOperationException catch (e) {
             // TODO
@@ -131,7 +142,7 @@ class _PatientListState extends State<PatientList> {
                   print(e.toString());
               }
           }
-//opens the contact form
+
         },
         child: Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,

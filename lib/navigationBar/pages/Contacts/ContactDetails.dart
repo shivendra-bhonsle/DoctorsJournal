@@ -2,6 +2,8 @@ import 'package:contacts_service/contacts_service.dart';
 import 'package:flutter/material.dart';
 import 'AppContact.dart';
 
+//CONTACT DETAILS PAGE
+
 class ContactDetails extends StatefulWidget {
   final AppContact contact;
   final Function(AppContact) onContactUpdate;
@@ -29,7 +31,7 @@ class _ContactDetailsState extends State<ContactDetails> {
       Widget deleteButton=TextButton(
           style: TextButton.styleFrom(primary: Colors.red),
           onPressed: () async{
-            await ContactsService.deleteContact(widget.contact.info!);
+            await ContactsService.deleteContact(widget.contact.info!);//passing the contact to main contact app for deleting it
             widget.onContactDelete(widget.contact);
             Navigator.of(context).pop();
 
@@ -149,8 +151,3 @@ class _ContactDetailsState extends State<ContactDetails> {
     );
   }
 }
-//Center(child:
-//                     CircleAvatar(
-//                         child: Text(widget.contact.info!.initials()),
-//
-//                     )),

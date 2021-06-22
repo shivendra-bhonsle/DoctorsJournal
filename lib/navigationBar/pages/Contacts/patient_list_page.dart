@@ -43,7 +43,7 @@ class _PatientListState extends State<PatientList> {
         });
     }
   }
-
+  //List<AppContact?> _contacts=[];
   getAllContacts() async{
     /*List colors = [
       Colors.green,
@@ -52,6 +52,10 @@ class _PatientListState extends State<PatientList> {
       Colors.orange
     ];
     int colorIndex = 0;*/
+
+    // Contact cntc;
+    // cntc=(await ContactsService.openDeviceContactPicker()) as Contact;
+    // _contacts.add(new AppContact(info: cntc,));
     List<AppContact?> _contacts = (await ContactsService.getContacts()).map((contact){//to get contacts from main contact app and map each contact
     /*Color baseColor = colors[colorIndex];
     colorIndex++;
@@ -65,7 +69,7 @@ class _PatientListState extends State<PatientList> {
 
 
       //return a object appContact
-    }).toList();//convert to list
+    }).toList();//convert to list*/
     print(_contacts);
     _contacts.removeWhere((element) => element==null);
     print(_contacts);

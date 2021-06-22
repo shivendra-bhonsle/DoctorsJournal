@@ -3,7 +3,7 @@ import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Calender_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
-import 'package:doctors_diary/navigationBar/pages/Developers_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Developers/Developers_page.dart';
 
 class MenuBar extends StatelessWidget {
   const MenuBar({Key? key}) : super(key: key);

@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
       body: Container(
         child: SplashScreen(
           seconds: 4,
-          imageBackground: AssetImage('images/Android - 1spalshscreen_figma.png'),
+          imageBackground: AssetImage('assets/images/Android - 1spalshscreen_figma.png'),
           loaderColor: Colors.blue[300],
           //navigateAfterSeconds: AboutPage(),
           navigateAfterSeconds: Wrapper(),

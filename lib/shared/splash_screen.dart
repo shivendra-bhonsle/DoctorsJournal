@@ -6,7 +6,7 @@ class StartLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Image(
-        image: AssetImage('images/Android - 1spalshscreen_figma.png'),
+        image: AssetImage('assets/images/Android - 1spalshscreen_figma.png'),
       )
     );
   }

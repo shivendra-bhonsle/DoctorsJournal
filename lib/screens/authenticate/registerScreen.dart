@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 
 
 
+
 final FirebaseAuth _auth = FirebaseAuth.instance;
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -176,6 +177,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 padding: EdgeInsets.symmetric(vertical: 10.0),
                 child: ElevatedButton(
                   onPressed: () async {
+
                     if (_formKeyOTP.currentState!.validate()) {
                       // If the form is valid, we want to show a loading Snackbar
                       // If the form is valid, we want to do firebase signup...
@@ -191,6 +193,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             user) async => //sign in was success
                         {
                           if(user != null){
+
                             //store registration details in firestore database
                             /*await _firestore.collection('users')
                                 .doc(_auth.currentUser!.uid)
@@ -312,80 +315,104 @@ class _RegisterScreenState extends State<RegisterScreen> {
     setState(() {
       isLoading = true;
     });
+    var isValidUser = false;
     var phoneNumber = '+91' + cellnumberController.text.trim();
-    var verifyPhoneNumber = _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (phoneAuthCredential) {
-          _auth.signInWithCredential(phoneAuthCredential).then((user) async =>
-          {
+    await _firestore
+        .collection('users')
+        .where('mobile', isEqualTo: cellnumberController.text.trim())
+        .get()
+        .then((result) {
+      if (result.docs.length > 0) {
+        isValidUser = true;
+      }
+    });
+    if(isValidUser==false){
+      var verifyPhoneNumber = _auth.verifyPhoneNumber(
+          phoneNumber: phoneNumber,
+          verificationCompleted: (phoneAuthCredential) {
+            _auth.signInWithCredential(phoneAuthCredential).then((user) async =>
+            {
 
-            if (user != null) //if user is not null
-              {
-                //store registration details in firestore database
-                await _firestore
-                    .collection('users')
-                    .doc(_auth.currentUser!.uid)
-                    .set({
-                  'name': nameController.text.trim(),
-                  'mobile': cellnumberController.text.trim()
-                }, SetOptions(
-                    merge: true)) //if user accidentally registers for 2nd time i will merge
-                    .then((value) =>
+              if (user!=null) //if user is not null
                 {
-                  //then move to authorised area
-                  setState(() {
-                    isLoading = false;
-                    isRegister = false;
-                    isOTPScreen = false;
 
-                    //navigate to is
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            HomeTemp(),
-                      ),
-                          (route) => false,
-                    );
+                  //store registration details in firestore database
+                  await _firestore
+                      .collection('users')
+                      .doc(_auth.currentUser!.uid)
+                      .set({
+                    'name': nameController.text.trim(),
+                    'mobile': cellnumberController.text.trim()
+                  }, SetOptions(
+                      merge: true)) //if user accidentally registers for 2nd time i will merge
+                      .then((value) =>
+                  {
+                    //then move to authorised area
+                    setState(() {
+                      isLoading = false;
+                      isRegister = false;
+                      isOTPScreen = false;
+
+                      //navigate to is
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              HomeTemp(),
+                        ),
+                            (route) => false,
+                      );
+                    })
                   })
-                })
-                    .catchError((onError) =>
-                {
-                  debugPrint(
-                      'Error saving user to db.' + onError.toString())
-                })
-              }
-          }
+                      .catchError((onError) =>
+                  {
+                    debugPrint(
+                        'Error saving user to db.' + onError.toString())
+                  })
+                }
 
-          );
-        },
-        //starts a verification process for given number and executes if number is verified
-        verificationFailed: (FirebaseAuthException error) {
-          debugPrint('Error Logging in: ' + error.message.toString());
-          setState(() {
-            isLoading = false;
-          });
-        },
-        codeSent: (verificationId,
-            [forResendingToken]) { //exceutes when firebase send the code
-          setState(() {
-            isLoading = false;
-            verificationCode =
-                verificationId; //storing the code d=sent i.e verificationId into verificationCode
-          });
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          setState(() {
-            isLoading = false;
-            verificationCode = verificationId;
-          });
-        },
-        timeout: Duration(
-            seconds: 60) //starts a verification process for given phone number
-    );
-    await verifyPhoneNumber;
+            }
+
+            );
+          },
+          //starts a verification process for given number and executes if number is verified
+          verificationFailed: (FirebaseAuthException error) {
+            debugPrint('Error Logging in: ' + error.message.toString());
+            setState(() {
+              isLoading = false;
+            });
+          },
+          codeSent: (verificationId,
+              [forResendingToken]) { //exceutes when firebase send the code
+            setState(() {
+              isLoading = false;
+              verificationCode =
+                  verificationId; //storing the code d=sent i.e verificationId into verificationCode
+            });
+          },
+          codeAutoRetrievalTimeout: (String verificationId) {
+            setState(() {
+              isLoading = false;
+              verificationCode = verificationId;
+            });
+          },
+          timeout: Duration(
+              seconds: 60) //starts a verification process for given phone number
+      );
+      await verifyPhoneNumber;
+    }
+    else{
+      displaySnackBar("User already present");
+      Navigator.of(context).pop();
+    }
+
+
+
   }
-
+  displaySnackBar(text) {
+    final snackBar = SnackBar(content: Text(text));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
 
 //Commented for testing end
 
@@ -542,11 +569,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     }
 
-  }
-  displaySnackBar(text) {
-    final snackBar = SnackBar(content: Text(text));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
   }*/
+
+
 }
 

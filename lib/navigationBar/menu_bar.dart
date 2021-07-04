@@ -83,7 +83,7 @@ class MenuBar extends StatelessWidget {
         break;
       case 2:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => Calender(),
+          builder: (context) => CalendarPage(),
         ));
         break;
       case 3:

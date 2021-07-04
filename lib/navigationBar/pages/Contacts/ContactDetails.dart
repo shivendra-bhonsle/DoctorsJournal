@@ -1,4 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
+import 'package:doctors_diary/navigationBar/pages/Calender_page.dart';
+import 'package:doctors_diary/services/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'AppContact.dart';
 
@@ -9,6 +14,7 @@ class ContactDetails extends StatefulWidget {
   final Function(AppContact) onContactUpdate;
   final Function(AppContact) onContactDelete;
 
+
   const ContactDetails(this.contact, {required this.onContactUpdate, required this.onContactDelete});
 
   @override
@@ -16,12 +22,114 @@ class ContactDetails extends StatefulWidget {
 }
 
 class _ContactDetailsState extends State<ContactDetails> {
+
+  //setting up editable text widget for Notes
+  bool _isEditingText = false;
+  TextEditingController _editingControllerNotes = new TextEditingController();
+  String initialText = "Tap to edit notes...";
+
+  // bool _isEditingAge = false;
+  // TextEditingController _editingControllerAge = new TextEditingController();
+  // String initialAge = "00";
+
+
+
   @override
   Widget build(BuildContext context) {
     List<String> actions=<String>[
       'Edit',
       'Delete'
     ];
+
+    FirebaseAuth _auth = FirebaseAuth.instance;
+    int age = 0;
+    String description = 'Sample Text';
+
+    @override
+    void initState(){
+      super.initState();
+      _editingControllerNotes = TextEditingController(text: initialText);
+      //_editingControllerAge = TextEditingController(text: initialAge);
+    }
+
+    @override
+    void dispose(){
+      _editingControllerNotes.dispose();
+      super.dispose();
+    }
+
+    Widget _editTitleTextField() {
+      if (_isEditingText) {
+        return TextField(
+          onSubmitted: (newValue) {
+            setState(() {
+              if (newValue != '') {
+                initialText = newValue;
+              }
+              else{
+                initialText = 'Tap to edit notes...';
+              }
+              _isEditingText = false;
+            });
+          },
+          autofocus: true,
+          controller: _editingControllerNotes,
+          style: TextStyle(color: Colors.blue[900], fontSize: 20),
+        );
+      }
+      return InkWell(
+          onTap: () {
+        setState(() {
+          _isEditingText = true;
+        });
+      },
+      child: Text(
+      initialText,
+      style: TextStyle(
+      color: Colors.blue[900],
+      fontSize: 20.0,
+      ),
+        //textAlign: TextAlign.start,
+      )
+      );
+    }
+
+    //TODO
+    // Widget _editTitleTextFieldAge() {
+    //   if (_isEditingAge) {
+    //     return TextField(
+    //       onSubmitted: (newValue) {
+    //         setState(() {
+    //           if (newValue != '') {
+    //             initialAge = newValue;
+    //           }
+    //           else{
+    //             initialAge = '00';
+    //           }
+    //           _isEditingAge = false;
+    //         });
+    //       },
+    //       autofocus: true,
+    //       controller: _editingControllerAge,
+    //       style: TextStyle(color: Colors.blue[900], fontSize: 20),
+    //     );
+    //   }
+    //   return InkWell(
+    //       onTap: () {
+    //         setState(() {
+    //           _isEditingAge = true;
+    //         });
+    //       },
+    //       child: Text(
+    //         initialAge,
+    //         style: TextStyle(
+    //           color: Colors.blue[900],
+    //           fontSize: 20.0,
+    //         ),
+    //         //textAlign: TextAlign.start,
+    //       )
+    //   );
+    // }
 
     showDeleteConfirmation(){
       Widget cancelButton=TextButton(onPressed: (){
@@ -142,12 +250,104 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ],
               ),
             ),
+            // StreamBuilder<QuerySnapshot>(
+            //   stream: FirebaseFirestore.instance.collection('users').snapshots(),
+            //     builder: (context,snapshot){
+            //       if(snapshot.hasData){
+            //         var doc = snapshot.data!.docs;
+            //         return ListView.builder(
+            //             itemCount: doc.length,
+            //             itemBuilder: (context, index){
+            //               return doc[index].data('name') ?? '';
+            //             }
+            //         );
+            //       }
+            //       else{
+            //         return LinearProgressIndicator();
+            //       }
+            //
+            //     }
+            // ),
 
+            SingleChildScrollView(
+              child: Container(
+                width: MediaQuery.of(context).size.width-10,
+                height: 300.8,
+                //color: Colors.teal[50],
+                margin: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    SizedBox(height: 10,),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Age: $age', style: TextStyle(fontSize: 22),),
+                        SizedBox(width: 10,),
+                        //_editTitleTextFieldAge(),
+                        SizedBox(width: 40,),
+                        IconButton(
+                          splashRadius: 20,
+                          onPressed: (){
 
+                          },
+                          icon: Icon(Icons.edit_outlined),
+                          iconSize: 25,
+
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 15,),
+                    Text('Next Appointment: ', style: TextStyle(fontSize: 22), textAlign: TextAlign.left, ),
+                    SizedBox(height: 25,),
+                    Text('Last Appointment: ', style: TextStyle(fontSize: 22),),
+                    SizedBox(height: 25,),
+                    Text('Notes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                    // SizedBox(height: 5,),
+                    _editTitleTextField()
+
+                  ],
+                ),
+              ),
+            )
           ],
-
         ),
       ),
+      bottomSheet: Container(
+          height: MediaQuery.of(context).size.height-780,
+          margin: EdgeInsets.only(bottom: 10),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              RaisedButton(
+                onPressed:(){
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context)=>CalendarPage()));                },
+                child: Text('Add Appointment',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Roboto-bold',
+                      color: Colors.white),
+                ),
+                color: Colors.green[700],
+              ),
+
+              RaisedButton(
+                  onPressed: (){
+                    DatabaseService(uid: _auth.currentUser!.uid).fetchAllPatents();
+                  },
+                  child: Text('Save',
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontFamily: 'Roboto-bold',
+                        color: Colors.white),
+                  ),
+                  color: Colors.blue[700],
+                ),
+            ],
+          ),
+          ),
     );
   }
 }

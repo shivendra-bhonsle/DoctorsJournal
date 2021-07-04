@@ -1,4 +1,5 @@
 import 'package:doctors_diary/screens/home/home_temp.dart';
+import 'package:doctors_diary/services/database.dart';
 import 'package:doctors_diary/shared/Loading.dart';
 import 'package:doctors_diary/shared/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
+// String nextAppo = 'DD/MM/YYYY';
+// String lastAppo = 'dd/mm/yyyy';
+// String description = 'lorem ipsum';
 
 
 
@@ -213,7 +217,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             }
                             )*/
                             if(isLoginScreen == false){
-                              setUserData()
+                              setUserData(),
+                              print("Uid :" + _auth.currentUser!.uid),
                             },
 
 
@@ -299,17 +304,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
         .set({
       'name': nameController.text,
       'mobile': cellnumberController.text.trim(),
-    },
+      },
         SetOptions(
             merge: true)
     ).then((value) {
+
       //then move to authorised area
       setState(() {
         isLoading = false;
         isResend = false;
       });
     });
+
+
+
   }
+
+  // Future createSubcollectionForPatientList() async{
+  //   return  await _firestore.collection('users')
+  //       .doc(_auth.currentUser!.uid)
+  //       .collection('PatientList')
+  //       .add({
+  //     'nextAppo' : nextAppo,
+  //     'lastAppo' : lastAppo,
+  //     'description' : description
+  //   }    );
+  // }
 
   Future signUp() async {
     setState(() {

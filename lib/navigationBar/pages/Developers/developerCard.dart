@@ -15,14 +15,14 @@ class DeveloperCard extends StatelessWidget {
     return Card(
       elevation: 5.0,
 
-      margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
+      margin: EdgeInsets.fromLTRB(20, 20, 20, 0),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 12.0,horizontal: 10.0),
+        padding: EdgeInsets.symmetric(vertical: 15.0,horizontal: 13.0),
         child: Row(
           children: [
             CircleAvatar(
               backgroundImage: AssetImage(dev.image),
-              radius: 60.0,
+              radius: 50.0,
             ),
             Container(
               child: Padding(
@@ -30,7 +30,7 @@ class DeveloperCard extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(dev.name,textScaleFactor: 1.6,textAlign: TextAlign.center,style:GoogleFonts.roboto(fontWeight: FontWeight.bold ) ,),
-                    SizedBox(height: 30.0,),
+                    SizedBox(height: 20.0,),
                     Container(
 
                       child: Row(

@@ -1,5 +1,6 @@
 import 'package:doctors_diary/navigationBar/pages/Contacts/ContactDetails.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:doctors_diary/services/database.dart';
 import 'AppContact.dart';
 import 'package:flutter/material.dart';
 
@@ -9,6 +10,8 @@ class ContactsList extends StatelessWidget {
   final List<AppContact?> contacts;
   Function() reloadContacts;
    ContactsList({Key? key, required this.contacts,required this.reloadContacts}) : super(key: key);
+
+   FirebaseAuth _auth = FirebaseAuth.instance;
 
 
 
@@ -24,7 +27,7 @@ class ContactsList extends StatelessWidget {
          String number="";
           contact!.info!.phones!.forEach((f) { number=f.value!;});
           return ListTile(
-            onTap: (){
+            onTap: () async{
               if(contact.info!.phones!.isNotEmpty){
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (BuildContext context)=>ContactDetails(
@@ -48,7 +51,11 @@ class ContactsList extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
               }
+              await DatabaseService(uid: _auth.currentUser!.uid)
+                  .createSubcollectionForPatientList(contact.info!.displayName.toString(),
+                  contact.info!.phones!.elementAt(0).value.toString(), 50, 65, 'DD/MM/YYYY', 'dd/mm/yyyy', 'Lorem ipsum');
 
+              await DatabaseService(uid: _auth.currentUser!.uid).getPatientByNameAndNumber(contact.info!.displayName.toString(), contact.info!.phones!.elementAt(0).value.toString());
             },
             title: Text(contact.info!.displayName.toString()),
             subtitle: Text(number

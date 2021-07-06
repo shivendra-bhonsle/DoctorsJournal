@@ -8,6 +8,7 @@ String nextAppo = 'DD/MM/YYYY';
 String lastAppo = 'dd/mm/yyyy';
 String description = 'lorem ipsum';
 
+
 class DatabaseService{
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -26,8 +27,7 @@ class DatabaseService{
       String description) async{
     return  await FirebaseFirestore.instance.collection('users')
         .doc(uid)
-        .collection('PatientList')
-        .add({
+        .collection('PatientList').add({
       //'pid' : pid,
       'name' : name,
       'phoneno' : phoneno,
@@ -36,13 +36,25 @@ class DatabaseService{
       'nextAppo' : nextAppo,
       'lastAppo' : lastAppo,
       'description' : description
-    }    );
+    } );
   }
-  
-  //get patient info from subcollection
-  getPatientByNameAndNumber(String name, String phoneno) async {
-    return await FirebaseFirestore.instance.collection('users')
-        .doc(uid).collection('PatientList').where("name", isEqualTo: name).get();
+
+  //get Document id of the patient
+ Future<String> getDocIdOfPatient(String name, String phoneNo)async{
+    String patientId = "Not fetched";
+    //DocumentReference doc_ref = FirebaseFirestore.instance.collection('users').doc(uid).collection('PatientList').
+    await FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('PatientList')
+        .where('name', isEqualTo: name)
+        .where('phoneno', isEqualTo: phoneNo)
+        .get().then((querySnapshot) {
+      querySnapshot.docs.forEach((DocumentSnapshot element) {
+        patientId = element.id;
+        //print(patientId);
+      });
+    });
+
+    return patientId;
   }
 
   //get snapshot of PatientList

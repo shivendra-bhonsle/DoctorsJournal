@@ -51,12 +51,7 @@ class ContactsList extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
               }
-              await DatabaseService(uid: _auth.currentUser!.uid)
-                  .createSubcollectionForPatientList(contact.info!.displayName.toString(),
-                  contact.info!.phones!.elementAt(0).value.toString(), 50, 65, 'DD/MM/YYYY', 'dd/mm/yyyy', 'Lorem ipsum');
-
-              await DatabaseService(uid: _auth.currentUser!.uid).getPatientByNameAndNumber(contact.info!.displayName.toString(), contact.info!.phones!.elementAt(0).value.toString());
-            },
+              },
             title: Text(contact.info!.displayName.toString()),
             subtitle: Text(number
               //contact!.info!.phones!.elementAt(0).value.toString(),

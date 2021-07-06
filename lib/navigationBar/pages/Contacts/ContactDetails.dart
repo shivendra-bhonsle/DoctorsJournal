@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'AppContact.dart';
-
+import 'package:doctors_diary/services/database.dart';
 //CONTACT DETAILS PAGE
 
 class ContactDetails extends StatefulWidget {
@@ -27,7 +27,8 @@ class _ContactDetailsState extends State<ContactDetails> {
   bool _isEditingText = false;
   TextEditingController _editingControllerNotes = new TextEditingController();
   String initialText = "Tap to edit notes...";
-
+  FirebaseFirestore _firestore=FirebaseFirestore.instance;
+  FirebaseAuth _auth=FirebaseAuth.instance;
   // bool _isEditingAge = false;
   // TextEditingController _editingControllerAge = new TextEditingController();
   // String initialAge = "00";
@@ -94,42 +95,7 @@ class _ContactDetailsState extends State<ContactDetails> {
       );
     }
 
-    //TODO
-    // Widget _editTitleTextFieldAge() {
-    //   if (_isEditingAge) {
-    //     return TextField(
-    //       onSubmitted: (newValue) {
-    //         setState(() {
-    //           if (newValue != '') {
-    //             initialAge = newValue;
-    //           }
-    //           else{
-    //             initialAge = '00';
-    //           }
-    //           _isEditingAge = false;
-    //         });
-    //       },
-    //       autofocus: true,
-    //       controller: _editingControllerAge,
-    //       style: TextStyle(color: Colors.blue[900], fontSize: 20),
-    //     );
-    //   }
-    //   return InkWell(
-    //       onTap: () {
-    //         setState(() {
-    //           _isEditingAge = true;
-    //         });
-    //       },
-    //       child: Text(
-    //         initialAge,
-    //         style: TextStyle(
-    //           color: Colors.blue[900],
-    //           fontSize: 20.0,
-    //         ),
-    //         //textAlign: TextAlign.start,
-    //       )
-    //   );
-    // }
+
 
     showDeleteConfirmation(){
       Widget cancelButton=TextButton(onPressed: (){
@@ -250,24 +216,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                 ],
               ),
             ),
-            // StreamBuilder<QuerySnapshot>(
-            //   stream: FirebaseFirestore.instance.collection('users').snapshots(),
-            //     builder: (context,snapshot){
-            //       if(snapshot.hasData){
-            //         var doc = snapshot.data!.docs;
-            //         return ListView.builder(
-            //             itemCount: doc.length,
-            //             itemBuilder: (context, index){
-            //               return doc[index].data('name') ?? '';
-            //             }
-            //         );
-            //       }
-            //       else{
-            //         return LinearProgressIndicator();
-            //       }
-            //
-            //     }
-            // ),
+
 
             SingleChildScrollView(
               child: Container(
@@ -320,7 +269,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              RaisedButton(
+              ElevatedButton(
                 onPressed:(){
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context)=>CalendarPage()));                },
@@ -330,12 +279,13 @@ class _ContactDetailsState extends State<ContactDetails> {
                       fontFamily: 'Roboto-bold',
                       color: Colors.white),
                 ),
-                color: Colors.green[700],
+                style: ElevatedButton.styleFrom(primary: Colors.green[700]),
               ),
 
-              RaisedButton(
-                  onPressed: (){
-                    DatabaseService(uid: _auth.currentUser!.uid).fetchAllPatents();
+              ElevatedButton(
+                  onPressed: () async {
+                    await editNotes(); //calling function to edit description
+
                   },
                   child: Text('Save',
                     style: TextStyle(
@@ -343,11 +293,59 @@ class _ContactDetailsState extends State<ContactDetails> {
                         fontFamily: 'Roboto-bold',
                         color: Colors.white),
                   ),
-                  color: Colors.blue[700],
+                style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
+
                 ),
             ],
           ),
           ),
     );
   }
+
+  //function to edit description
+  Future editNotes() async{
+    String patID="";
+    var isPatientPresent=false;
+
+    await _firestore
+        .collection('users').doc(_auth.currentUser!.uid).collection('PatientList')
+        .where('phoneno', isEqualTo: widget.contact.info!.phones!.elementAt(0).value.toString())//check if a doc of patient with same mobile number is already present
+        .get()
+        .then((result) {
+
+        if(result.docs.length>0){
+          setState((){
+            isPatientPresent = true;//if yes then set patient present to true
+          });
+        }
+
+
+
+    });
+    if(isPatientPresent==false){//if patient is not present create new doc and set the desc as given
+      await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+          .createSubcollectionForPatientList(widget.contact.info!.displayName.toString(),
+          widget.contact.info!.phones!.elementAt(0).value.toString(), 50, 65, 'DD/MM/YYYY', 'dd/mm/yyyy', _editingControllerNotes.text);
+    }
+    else {
+      //if patient is already present
+      await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+          .getDocIdOfPatient(//find the id of that patient
+          widget.contact.info!.displayName.toString(),
+          widget.contact.info!.phones!.elementAt(0).value
+              .toString())
+          .then((value) {
+        setState(() {
+          patID = value.toString();
+        });
+      });
+
+      //update the desc
+      FirebaseFirestore.instance.collection('users').doc(
+          FirebaseAuth.instance.currentUser!.uid).collection('PatientList').doc(
+          patID).set(
+          {'description': _editingControllerNotes.text},
+          SetOptions(merge: true));
+    }
+}
 }

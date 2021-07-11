@@ -57,6 +57,23 @@ class DatabaseService{
     return patientId;
   }
 
+  //get name of the user(doctor)
+  /*Future<String> fetchName()  async {
+    String name="not set";
+    await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).get().then((value) {
+
+
+      name=value.data()!['name'].toString();
+
+      print(name);
+
+
+    });
+
+    return name;
+
+
+  }*/
   //get snapshot of PatientList
   fetchAllPatents() async {
     bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly

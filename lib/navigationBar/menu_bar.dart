@@ -51,6 +51,7 @@ class MenuBar extends StatelessWidget {
             MenuItems(
               text: 'Quit',
               icon: Icons.power_settings_new,
+
             ),
           ],
         ),

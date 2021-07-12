@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
 import 'package:doctors_diary/models/patient.dart';
-import 'package:doctors_diary/navigationBar/pages/Calender_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:doctors_diary/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';

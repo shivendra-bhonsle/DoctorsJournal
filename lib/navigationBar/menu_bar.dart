@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
-import 'package:doctors_diary/navigationBar/pages/Calender_page.dart';
+import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Developers/Developers_page.dart';
+import 'package:flutter/services.dart';
 
 class MenuBar extends StatelessWidget {
   const MenuBar({Key? key}) : super(key: key);
@@ -53,8 +54,7 @@ class MenuBar extends StatelessWidget {
             MenuItems(
               text: 'Quit',
               icon: Icons.power_settings_new,
-              onClicked: () {exit(0);},
-
+              onClicked: () => exit(0)
             ),
           ],
         ),

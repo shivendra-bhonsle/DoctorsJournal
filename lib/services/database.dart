@@ -22,7 +22,7 @@ class DatabaseService{
   // .doc(user.uid).collection('patientList');
 
   Future createSubcollectionForPatientList(String name, String phoneno,
-      int age, double weight,
+      int age,
       String nextAppo, String lastAppo,
       String description) async{
     return  await FirebaseFirestore.instance.collection('users')
@@ -32,7 +32,6 @@ class DatabaseService{
       'name' : name,
       'phoneno' : phoneno,
       'age' : age,
-      'weight' : weight,
       'nextAppo' : nextAppo,
       'lastAppo' : lastAppo,
       'description' : description
@@ -57,23 +56,78 @@ class DatabaseService{
     return patientId;
   }
 
-  //get name of the user(doctor)
-  /*Future<String> fetchName()  async {
-    String name="not set";
-    await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).get().then((value) {
+  //TODO get description from database
+  Future<String?> getPatientDesc(String pid)async{
+    String _description = "Tap to edit notes...";
+    String uid = _auth.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('PatientList') .doc(pid)
+        .get().then((doc) => {
+      print(doc.id),
+      //print(doc.data()),
+      _description = doc.data()!['description'].toString(),
+      print(_description)
 
-
-      name=value.data()!['name'].toString();
-
-      print(name);
-
-
+    }).catchError((e){
+      print(e);
     });
+    return _description;
+  }
 
-    return name;
+  //TODO get age from database
+  Future<String?> getPatientAge(String pid)async{
+    String _age = "Add";
+    String uid = _auth.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('PatientList') .doc(pid)
+        .get().then((doc) => {
+      print(doc.id),
+      //print(doc.data()),
+      _age = doc.data()!['age'].toString(),
+      print(_age)
 
+    }).catchError((e){
+      print(e);
+    });
+    return _age;
+  }
 
-  }*/
+  //TODO get nextAppo from database
+  Future<String?> getPatientNextAppo(String pid)async{
+    String _nextAppo = "not assigned";
+    String uid = _auth.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('PatientList') .doc(pid)
+        .get().then((doc) => {
+      print(doc.id),
+      //print(doc.data()),
+      _nextAppo = doc.data()!['nextAppo'].toString(),
+      print(_nextAppo)
+
+    }).catchError((e){
+      print(e);
+    });
+    return _nextAppo;
+  }
+
+  //TODO get lastAppo from database
+  Future<String?> getPatientLastAppo(String pid)async{
+    String _lastappo = "not assigned";
+    String uid = _auth.currentUser!.uid;
+    await FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('PatientList') .doc(pid)
+        .get().then((doc) => {
+      print(doc.id),
+      //print(doc.data()),
+      _lastappo = doc.data()!['lastAppo'].toString(),
+      print(_lastappo)
+
+    }).catchError((e){
+      print(e);
+    });
+    return _lastappo;
+  }
+
   //get snapshot of PatientList
   fetchAllPatents() async {
     bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly

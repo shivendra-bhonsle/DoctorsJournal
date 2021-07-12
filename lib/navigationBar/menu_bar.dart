@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
@@ -51,6 +53,7 @@ class MenuBar extends StatelessWidget {
             MenuItems(
               text: 'Quit',
               icon: Icons.power_settings_new,
+              onClicked: () {exit(0);},
 
             ),
           ],

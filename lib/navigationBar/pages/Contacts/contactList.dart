@@ -9,11 +9,9 @@ import 'package:flutter/material.dart';
 class ContactsList extends StatelessWidget {
   final List<AppContact?> contacts;
   Function() reloadContacts;
-   ContactsList({Key? key, required this.contacts,required this.reloadContacts}) : super(key: key);
+  ContactsList({Key? key, required this.contacts,required this.reloadContacts}) : super(key: key);
 
-   FirebaseAuth _auth = FirebaseAuth.instance;
-
-
+  FirebaseAuth _auth = FirebaseAuth.instance;
 
 
   @override
@@ -24,7 +22,7 @@ class ContactsList extends StatelessWidget {
         itemCount: contacts.length, //condition for which to show
         itemBuilder: (context,index){
           AppContact? contact = contacts[index];
-         String number="";
+          String number="";
           contact!.info!.phones!.forEach((f) { number=f.value!;});
           return ListTile(
             onTap: () async{
@@ -40,22 +38,20 @@ class ContactsList extends StatelessWidget {
                       onContactDelete: (AppContact _contact){
                         reloadContacts();
                         Navigator.of(context).pop();//this will take it to contact list page again after contact is deleted
-
-
                       },
                     )));
               }
               else{//if a contact does not have a number
 
-                  final snackBar = SnackBar(content: Text('Select a contact with a number'));
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                final snackBar = SnackBar(content: Text('Select a contact with a number'));
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
               }
-              },
+            },
             title: Text(contact.info!.displayName.toString()),
             subtitle: Text(number
               //contact!.info!.phones!.elementAt(0).value.toString(),
-                //getting the value of 1st available number of that contact
+              //getting the value of 1st available number of that contact
             ),
             leading: CircleAvatar(child: Text(contact.info!.initials()),),
 

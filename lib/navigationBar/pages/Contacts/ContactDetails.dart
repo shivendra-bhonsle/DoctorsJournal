@@ -89,7 +89,7 @@ class _ContactDetailsState extends State<ContactDetails> {
               autofocus: true,
               controller: _editingControllerNotes,
               style: TextStyle(color: Colors.blue[900], fontSize: 20),
-              maxLines: null,
+              maxLines: 6,
               //expands: true,
             );
       }
@@ -169,75 +169,74 @@ class _ContactDetailsState extends State<ContactDetails> {
     }
     return Scaffold(
       body: SafeArea(
-        child: Column(
-              children: [
-                Container(
-                  height: 180,
-                  decoration: BoxDecoration(color: Colors.grey[300]),
-                  child: Stack(
-                    alignment: Alignment.topCenter,
-                    children: <Widget>[
-                      Column(
-                        children: [
-                          Center(
+        child: SingleChildScrollView(
+          child: Column(
+                children: [
+                  Container(
+                    height: 180,
+                    decoration: BoxDecoration(color: Colors.grey[300]),
+                    child: Stack(
+                      alignment: Alignment.topCenter,
+                      children: <Widget>[
+                        Column(
+                          children: [
+                            Center(
 
-                              child: CircleAvatar
-                                (child:Text(widget.contact.info!.initials() ,textScaleFactor: 2.0,),
-                                maxRadius: 50.0,
+                                child: CircleAvatar
+                                  (child:Text(widget.contact.info!.initials() ,textScaleFactor: 2.0,),
+                                  maxRadius: 50.0,
 
-                              )),
-                          SizedBox(height: 10.0,),
-                          Text(
-                            widget.contact.info!.displayName.toString(),
-                            style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold,fontFamily: 'Roboto-Bold'),
-                          ),
-                          SizedBox(height: 10.0,),
-                          Text(
-                            widget.contact.info!.phones!.elementAt(0).value.toString(),
-                            style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.normal,fontFamily: 'Roboto-Light'),
-                          )
+                                )),
+                            SizedBox(height: 10.0,),
+                            Text(
+                              widget.contact.info!.displayName.toString(),
+                              style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold,fontFamily: 'Roboto-Bold'),
+                            ),
+                            SizedBox(height: 10.0,),
+                            Text(
+                              widget.contact.info!.phones!.elementAt(0).value.toString(),
+                              style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.normal,fontFamily: 'Roboto-Light'),
+                            )
 
-                        ],
-                      ),
-                      Align(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: IconButton(
-                            icon: Icon(Icons.arrow_back),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
+                          ],
                         ),
-                        alignment: Alignment.topLeft,
-                      ),
-                      Align(
-                        alignment: Alignment.topRight,
-                        child: Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: PopupMenuButton(
-                            onSelected: onAction,
-                            itemBuilder: (BuildContext context){
-                              return actions.map((String action){
-                                return PopupMenuItem(
-                                  value: action,
-                                  child: Text(action),
-                                );
-                              }).toList();
-                            },
+                        Align(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: IconButton(
+                              icon: Icon(Icons.arrow_back),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
                           ),
+                          alignment: Alignment.topLeft,
                         ),
-                      )
+                        Align(
+                          alignment: Alignment.topRight,
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: PopupMenuButton(
+                              onSelected: onAction,
+                              itemBuilder: (BuildContext context){
+                                return actions.map((String action){
+                                  return PopupMenuItem(
+                                    value: action,
+                                    child: Text(action),
+                                  );
+                                }).toList();
+                              },
+                            ),
+                          ),
+                        )
 
-                    ],
+                      ],
+                    ),
                   ),
-                ),
 
 
 
-                SingleChildScrollView(
-
-                  child: Container(
+                  Container(
                     width: MediaQuery.of(context).size.width-10,
                     height: 500,//300.8,
                     color: Colors.transparent,
@@ -268,13 +267,13 @@ class _ContactDetailsState extends State<ContactDetails> {
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              SizedBox(height: 10,),
+                              //SizedBox(height: 10,),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text('Age: ', style: TextStyle(fontSize: 22),),
                                   SizedBox(width: 10,),
-                                  Text("$age years", style: GoogleFonts.sahitya(fontSize: 22, fontWeight: FontWeight.bold)),
+                                  Text("$age years", style: GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.bold)),
                                   // FutureBuilder(
                                   //     future:  FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid)
                                   //         .collection('PatientList') .doc(
@@ -327,11 +326,27 @@ class _ContactDetailsState extends State<ContactDetails> {
                                   )
                                 ],
                               ),
-                              SizedBox(height: 15,),
-                              Text('Next Appointment: $nextAppo', style: TextStyle(fontSize: 22), textAlign: TextAlign.left, ),
-                              SizedBox(height: 25,),
-                              Text('Last Appointment: $lastAppo', style: TextStyle(fontSize: 22),),
-                              SizedBox(height: 25,),
+                              SizedBox(height: 10,),
+                              Row(
+                                children: [
+                                  Text('Next Appointment:', style: TextStyle(fontSize: 22), textAlign: TextAlign.left, ),
+                                  Card(color: Colors.white,
+                                      elevation:1 ,
+                                      child: Text(" $nextAppo", style: GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green[700]),),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 20,),
+                              Row(
+                                children: [
+                                  Text('Last Appointment: ', style: TextStyle(fontSize: 22),),
+                                  Card(color: Colors.white,
+                                    elevation: 1,
+                                    child: Text(" $lastAppo", style: GoogleFonts.roboto(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.brown[900]),),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 20,),
                               Text('Notes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
                               _editTitleTextField(description)
 
@@ -357,51 +372,55 @@ class _ContactDetailsState extends State<ContactDetails> {
 
                     ),
                   ),
-                )
 
-              ],
+                ],
 
-            )
+              ),
 
         ),
-
-      bottomSheet: Container(
-        height: MediaQuery.of(context).size.height-780,
-        margin: EdgeInsets.only(bottom: 10),
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ElevatedButton(
-              onPressed:(){
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context)=>CalendarPage()));                },
-              child: Text('Add Appointment',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'Roboto-bold',
-                    color: Colors.white),
+      ),
+        bottomSheet: Container(
+          height: MediaQuery.of(context).size.height-780,
+          margin: EdgeInsets.only(bottom: 10),
+          alignment: Alignment.center,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed:(){
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context)=>CalendarPage()));                },
+                child: Text('Add Appointment',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Roboto-bold',
+                      color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(primary: Colors.green[700]),
               ),
-              style: ElevatedButton.styleFrom(primary: Colors.green[700]),
-            ),
 
-            ElevatedButton(
-              onPressed: () async {
-                await editNotes(); //calling function to edit description
+              ElevatedButton(
+                onPressed: () async {
+                  await editNotes(); //calling function to edit description
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => super.widget));
 
-              },
-              child: Text('Save',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontFamily: 'Roboto-bold',
-                    color: Colors.white),
+                },
+                child: Text('Save',
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontFamily: 'Roboto-bold',
+                      color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
+
               ),
-              style: ElevatedButton.styleFrom(primary: Colors.blue[700]),
-
-            ),
-          ],
+            ],
+          ),
         ),
-      )
+
     );
   }
 

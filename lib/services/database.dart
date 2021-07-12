@@ -93,7 +93,7 @@ class DatabaseService{
   }
 
   //TODO get nextAppo from database
-  Future<String?> getPatientNextAppo(String pid)async{
+  Future<String?> getPatientNextAppo(String pid) async {
     String _nextAppo = "not assigned";
     String uid = _auth.currentUser!.uid;
     await FirebaseFirestore.instance.collection('users').doc(uid)

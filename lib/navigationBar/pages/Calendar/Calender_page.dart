@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 
@@ -12,7 +13,9 @@ class Event {
 }
 
 class CalendarPage extends StatelessWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  final String name,mobile;
+  final bool isFromContactDetails;
+  const CalendarPage({Key? key, this.name="not assigned", this.mobile="not assigned",this.isFromContactDetails=false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +25,15 @@ class CalendarPage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
-      body: Calendar(),
+      body: Calendar(name: name,mobile: mobile,isFromContactDetails:isFromContactDetails),
     );
   }
 }
 
 class Calendar extends StatefulWidget {
-  const Calendar({Key? key}) : super(key: key);
+  final String name,mobile;
+  final bool isFromContactDetails;
+  const Calendar({Key? key,required this.name,required this.mobile,required this.isFromContactDetails}) : super(key: key);
 
   @override
   _CalendarState createState() => _CalendarState();
@@ -44,6 +49,7 @@ class _CalendarState extends State<Calendar> {
   DateTime _selectedDay = DateTime.now();
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  bool isDateSelected=false;
   final currentDay = DateTime.now();
   TextEditingController _eventController = TextEditingController();
 
@@ -63,6 +69,8 @@ class _CalendarState extends State<Calendar> {
   void initState(){
     selectedEvents = {};
     super.initState();
+    //_selectedDay=_focusedDay;
+
   }
 
   //Get events
@@ -78,19 +86,28 @@ class _CalendarState extends State<Calendar> {
 
   //Select day
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
+    /*print("Selected day para "+selectedDay.toString());
+    print("Selected day "+_selectedDay.toString());
+
+    print("focused day para "+focusedDay.toString());
+    print("focused day "+_focusedDay.toString());*/
+
+    //if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay = focusedDay;
+        isDateSelected=true;
         _rangeStart = null;
         _rangeEnd = null;
       });
-    }
+    //}
+
   }
 
   //Add Appointments
-  void addAppointments(){
-    showDialog(
+  Future<void> addAppointments() async {
+
+    /*showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: Text("Add Appointments"),
@@ -130,7 +147,31 @@ class _CalendarState extends State<Calendar> {
             ),
           ],
         )
-    );
+    );*/
+    await selectTime(context);
+    if(selectedEvents[_selectedDay]!=null){
+      setState(() {
+        selectedEvents[_selectedDay]!.add(Event(
+          title: widget.name,
+          time: picked,
+        )
+        );
+      });
+
+    }else{
+      setState(() {
+        selectedEvents[_selectedDay] = [
+          Event(
+            title: widget.name,
+            time: picked,
+          )
+        ];
+      });
+
+    }
+    print(selectedEvents);
+
+
 }
 
   //Appointment Cards
@@ -151,7 +192,7 @@ class _CalendarState extends State<Calendar> {
                     alignment: Alignment.centerRight,
                     onPressed: (){
                       setState(() {
-                        _getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s );
+                        _getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
                       });
                       },
                     icon: Icon(Icons.delete),
@@ -167,7 +208,10 @@ class _CalendarState extends State<Calendar> {
   //Table Calendar and events
   @override
   Widget build(BuildContext context) {
+    //_onDaySelected(_selectedDay,_focusedDay);
+
     return Scaffold(
+
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
@@ -175,15 +219,19 @@ class _CalendarState extends State<Calendar> {
               TableCalendar(
                 firstDay:  DateTime.utc(2000, 1, 1),
                 lastDay:  DateTime.utc(2100, 12, 31),
+
                 focusedDay: _focusedDay,
+
+
+
                 rangeStartDay: _rangeStart,
                 rangeEndDay: _rangeEnd,
                 calendarFormat: _calendarFormat,
                 startingDayOfWeek: StartingDayOfWeek.monday,
                 onDaySelected: _onDaySelected,
                 selectedDayPredicate: (day) {
-                  return isSameDay(_selectedDay, day);
-                },
+                return isSameDay(_selectedDay, day);
+              },
                 onFormatChanged: (format) {
                   setState(() {
                     _calendarFormat = format;
@@ -201,14 +249,28 @@ class _CalendarState extends State<Calendar> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    FloatingActionButton.extended(
-                      onPressed: (){
-                        addAppointments();
-                        },
-                      label: Text("Add Appointments"),
-                      icon: Icon(Icons.add),
+
+                    Visibility(
+                      visible: widget.isFromContactDetails?(isDateSelected?true:false):false,
+                      child: FloatingActionButton.extended(
+
+                        onPressed: () async {
+                          await addAppointments();
+                          //TODO create doc in database
+                          },
+                        label: Text("Add Appointments"),
+                        icon: Icon(Icons.add),
+                      ),
                     ),
                   ],
+                ),
+              ),
+
+              Visibility(
+                visible: widget.isFromContactDetails?(isDateSelected?false:true):false,
+                child: Text(
+                    "Tap on a Date to add Appointment",
+                    style:GoogleFonts.roboto(fontSize: 20,color: Colors.pink,fontWeight: FontWeight.bold)
                 ),
               )
             ],

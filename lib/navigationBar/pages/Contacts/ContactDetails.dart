@@ -9,7 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'AppContact.dart';
-import 'package:doctors_diary/services/database.dart';
+
 //CONTACT DETAILS PAGE
 
 class ContactDetails extends StatefulWidget {
@@ -389,7 +389,7 @@ class _ContactDetailsState extends State<ContactDetails> {
               ElevatedButton(
                 onPressed:(){
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context)=>CalendarPage()));                },
+                      builder: (BuildContext context)=>CalendarPage(name:widget.contact.info!.displayName.toString() ,mobile: widget.contact.info!.phones!.elementAt(0).value.toString(),isFromContactDetails:true)));                },
                 child: Text('Add Appointment',
                   style: TextStyle(
                       fontSize: 20,

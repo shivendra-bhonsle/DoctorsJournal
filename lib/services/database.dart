@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctors_diary/models/patient.dart';
-import 'package:doctors_diary/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -21,8 +19,8 @@ class DatabaseService{
   // final CollectionReference patientList = FirebaseFirestore.instance.collection('users')
   // .doc(user.uid).collection('patientList');
 
-  Future createSubcollectionForPatientList(String name, String phoneno,
-      int age,
+  Future createSubcollectionForPatientList(String name, String phoneno,          //if subcollection exists, only new doc is created
+      String age,
       String nextAppo, String lastAppo,
       String description) async{
     return  await FirebaseFirestore.instance.collection('users')
@@ -35,6 +33,17 @@ class DatabaseService{
       'nextAppo' : nextAppo,
       'lastAppo' : lastAppo,
       'description' : description
+    } );
+  }
+
+  Future createSubcollectionForAppointments(String pid, String name, String appoDate, String appoTime) async{
+    return  await FirebaseFirestore.instance.collection('users')
+        .doc(uid)
+        .collection('Appointments').add({
+      'pid' : pid,
+      'name' : name,
+      'appoDate' : appoDate,
+      'appoTime' : appoTime
     } );
   }
 
@@ -145,7 +154,14 @@ class DatabaseService{
         }
       });
     });
+  }
 
+  fetchAllAppointments() async {
+    return await FirebaseFirestore.instance.collection('users').doc(uid).collection('Appointments').get().then((QuerySnapshot querySnapshot){
+      querySnapshot.docs.forEach((element) {
+          print(element.id);
+        });
+      });
   }
 
   // get patient stream

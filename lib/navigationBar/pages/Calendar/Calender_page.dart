@@ -1,3 +1,7 @@
+import 'dart:math';
+
+import 'package:doctors_diary/services/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -13,9 +17,10 @@ class Event {
 }
 
 class CalendarPage extends StatelessWidget {
-  final String name,mobile;
+  final String name,mobile,patID;
   final bool isFromContactDetails;
-  const CalendarPage({Key? key, this.name="not assigned", this.mobile="not assigned",this.isFromContactDetails=false}) : super(key: key);
+  const CalendarPage({Key? key, this.name="not assigned", this.mobile="not assigned",this.isFromContactDetails=false, this.patID="not assigned"}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +30,15 @@ class CalendarPage extends StatelessWidget {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
-      body: Calendar(name: name,mobile: mobile,isFromContactDetails:isFromContactDetails),
+      body: Calendar(name: name,mobile: mobile,isFromContactDetails:isFromContactDetails, patID: patID),
     );
   }
 }
 
 class Calendar extends StatefulWidget {
-  final String name,mobile;
+  final String name,mobile, patID;
   final bool isFromContactDetails;
-  const Calendar({Key? key,required this.name,required this.mobile,required this.isFromContactDetails}) : super(key: key);
+  const Calendar({Key? key,required this.name,required this.mobile,required this.isFromContactDetails, required this.patID}) : super(key: key);
 
   @override
   _CalendarState createState() => _CalendarState();
@@ -52,6 +57,10 @@ class _CalendarState extends State<Calendar> {
   bool isDateSelected=false;
   final currentDay = DateTime.now();
   TextEditingController _eventController = TextEditingController();
+
+  //database variables
+  FirebaseAuth _auth = FirebaseAuth.instance;
+
 
   //To select the time of appointment
   Future<Null> selectTime(BuildContext context) async {
@@ -105,7 +114,7 @@ class _CalendarState extends State<Calendar> {
   }
 
   //Add Appointments
-  Future<void> addAppointments() async {
+  Future<void> addAppointments(String name, TimeOfDay timeOfDay) async {
 
     /*showDialog(
         context: context,
@@ -152,8 +161,8 @@ class _CalendarState extends State<Calendar> {
     if(selectedEvents[_selectedDay]!=null){
       setState(() {
         selectedEvents[_selectedDay]!.add(Event(
-          title: widget.name,
-          time: picked,
+          title: name,
+          time: timeOfDay,
         )
         );
       });
@@ -162,8 +171,8 @@ class _CalendarState extends State<Calendar> {
       setState(() {
         selectedEvents[_selectedDay] = [
           Event(
-            title: widget.name,
-            time: picked,
+            title: name,
+            time: timeOfDay,
           )
         ];
       });
@@ -255,8 +264,14 @@ class _CalendarState extends State<Calendar> {
                       child: FloatingActionButton.extended(
 
                         onPressed: () async {
-                          await addAppointments();
+                          await addAppointments(widget.name, picked);
                           //TODO create doc in database
+                          String uid = _auth.currentUser!.uid;
+                          DatabaseService(uid: uid).createSubcollectionForAppointments(
+                              widget.patID,
+                              widget.name,
+                              _selectedDay.toString(),
+                              picked.toString());
                           },
                         label: Text("Add Appointments"),
                         icon: Icon(Icons.add),

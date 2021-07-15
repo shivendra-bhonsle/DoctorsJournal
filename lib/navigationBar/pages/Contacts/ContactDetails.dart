@@ -71,6 +71,7 @@ class _ContactDetailsState extends State<ContactDetails> {
     FirebaseAuth _auth = FirebaseAuth.instance;
 
 
+
     Widget _editTitleTextField(String str) {
       if (_isEditingText) {
         return TextField(
@@ -480,23 +481,24 @@ class _ContactDetailsState extends State<ContactDetails> {
     //passing age variable from ContactDetailsState class because this function is outside that class so "age" can't be accessed directly
     String patID = "";
     var isPatientPresent = false;
-
-    await _firestore
-        .collection('users').doc(_auth.currentUser!.uid).collection(
-        'PatientList')
-        .where('name', isEqualTo: widget.contact.info!.displayName.toString())
-        .where('phoneno',
-        isEqualTo: widget.contact.info!.phones!.elementAt(0).value
-            .toString()) //check if a doc of patient with same mobile number is already present
-        .get()
-        .then((result) {
-      if (result.docs.length > 0) {
-        setState(() {
-          isPatientPresent = true; //if yes then set patient present to true
-        });
-      }
-    });
-    if (isPatientPresent ==
+    //
+    // await _firestore
+    //     .collection('users').doc(_auth.currentUser!.uid).collection(
+    //     'PatientList')
+    //     .where('name', isEqualTo: widget.contact.info!.displayName.toString())
+    //     .where('phoneno',
+    //     isEqualTo: widget.contact.info!.phones!.elementAt(0).value
+    //         .toString()) //check if a doc of patient with same mobile number is already present
+    //     .get()
+    //     .then((result) {
+    //   if (result.docs.length > 0) {
+    //     setState(() {
+    //       isPatientPresent = true; //if yes then set patient present to true
+    //     });
+    //   }
+    //
+    // });
+    /*if (isPatientPresent ==
         false) { //if patient is not present create new doc and set the desc as given
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .createSubcollectionForPatientList(
@@ -504,7 +506,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           widget.contact.info!.phones!.elementAt(0).value.toString(), age,
           'DD/MM/YYYY', 'dd/mm/yyyy', _editingControllerNotes.text);
     }
-    else {
+    else {*/
       //if patient is already present
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .getDocIdOfPatient( //find the id of that patient
@@ -524,7 +526,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           patID).set(
           {'description': _editingControllerNotes.text},
           SetOptions(merge: true));
-    }
+    //}
   }
 
   // Future<void> fetchDescription() async {
@@ -667,7 +669,7 @@ class _ContactDetailsState extends State<ContactDetails> {
 
   Future editAge(/*String newAge*/) async {
     String patID = "";
-    bool isPatientExisting = false;
+    /*bool isPatientExisting = false;
     await _firestore
         .collection('users').doc(_auth.currentUser!.uid).collection(
         'PatientList')
@@ -683,7 +685,7 @@ class _ContactDetailsState extends State<ContactDetails> {
         });
       }
     });
-//TODO patient collection created only when notes edited
+// patient collection created only when notes edited
     if (isPatientExisting ==
         false) { //if patient is not present create new doc and set the desc as given
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
@@ -692,7 +694,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           widget.contact.info!.phones!.elementAt(0).value.toString(), ageController.text,
           'DD/MM/YYYY', 'dd/mm/yyyy', _editingControllerNotes.text);
     }
-    else {
+    else {*/
       //if patient is already present
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .getDocIdOfPatient( //find the id of that patient
@@ -711,6 +713,6 @@ class _ContactDetailsState extends State<ContactDetails> {
       collection('PatientList').doc(patID).set(
           {'age': ageController.text},
           SetOptions(merge: true));
-    }
+    //}
   }
 }

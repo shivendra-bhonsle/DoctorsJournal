@@ -16,6 +16,7 @@ class DatabaseService{
 
   DatabaseService({required this.uid});
 
+
   // final CollectionReference patientList = FirebaseFirestore.instance.collection('users')
   // .doc(user.uid).collection('patientList');
 
@@ -156,14 +157,28 @@ class DatabaseService{
     });
   }
 
-  fetchAllAppointments() async {
-    return await FirebaseFirestore.instance.collection('users').doc(uid).collection('Appointments').get().then((QuerySnapshot querySnapshot){
-      querySnapshot.docs.forEach((element) {
-          print(element.id);
-        });
-      });
-  }
 
+
+  //get snapshot of PatientList
+  fetchAllAppointments() async {
+    bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
+    return await FirebaseFirestore.instance.collection('users').doc(uid).collection("Appointments").get().then((QuerySnapshot querySnapshot){
+      querySnapshot.docs.forEach((element) {
+        /*if(doneOnce){
+          doneOnce = false;
+          FirebaseFirestore.instance.collection('users')
+              .doc(uid).collection('PatientList')
+              .get().then((querySnapshot){
+            querySnapshot.docs.forEach((element) {
+              print(element.data());
+            });
+          });
+        }*/
+        print(element.id);
+      });
+    });
+
+  }
   // get patient stream
   // Stream<Patient> get patients {
   //   return FirebaseFirestore.instance.collection('users')

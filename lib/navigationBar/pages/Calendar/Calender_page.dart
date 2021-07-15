@@ -114,7 +114,7 @@ class _CalendarState extends State<Calendar> {
   }
 
   //Add Appointments
-  Future<void> addAppointments(String name, TimeOfDay timeOfDay) async {
+  Future<void> addAppointments() async {
 
     /*showDialog(
         context: context,
@@ -161,8 +161,8 @@ class _CalendarState extends State<Calendar> {
     if(selectedEvents[_selectedDay]!=null){
       setState(() {
         selectedEvents[_selectedDay]!.add(Event(
-          title: name,
-          time: timeOfDay,
+          title: widget.name,
+          time: picked,
         )
         );
       });
@@ -171,8 +171,8 @@ class _CalendarState extends State<Calendar> {
       setState(() {
         selectedEvents[_selectedDay] = [
           Event(
-            title: name,
-            time: timeOfDay,
+            title: widget.name,
+            time: picked,
           )
         ];
       });
@@ -264,7 +264,7 @@ class _CalendarState extends State<Calendar> {
                       child: FloatingActionButton.extended(
 
                         onPressed: () async {
-                          await addAppointments(widget.name, picked);
+                          await addAppointments();
                           //TODO create doc in database
                           String uid = _auth.currentUser!.uid;
                           DatabaseService(uid: uid).createSubcollectionForAppointments(

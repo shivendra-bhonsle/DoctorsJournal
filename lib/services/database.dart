@@ -1,4 +1,7 @@
+//import 'dart:html';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -139,46 +142,53 @@ class DatabaseService{
   }
 
   //get snapshot of PatientList
-  fetchAllPatents() async {
-    bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
-    return await FirebaseFirestore.instance.collection('users').get().then((QuerySnapshot querySnapshot){
-      querySnapshot.docs.forEach((element) {
-        if(doneOnce){
-          doneOnce = false;
-          FirebaseFirestore.instance.collection('users')
-              .doc(uid).collection('PatientList')
-              .get().then((querySnapshot){
-            querySnapshot.docs.forEach((element) {
-              print(element.data());
-            });
-          });
-        }
-      });
-    });
-  }
+  // fetchAllPatients() async {
+  //   bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
+  //   return await FirebaseFirestore.instance.collection('users').get().then((QuerySnapshot querySnapshot){
+  //     querySnapshot.docs.forEach((element) {
+  //       if(doneOnce){
+  //         doneOnce = false;
+  //         FirebaseFirestore.instance.collection('users')
+  //             .doc(uid).collection('PatientList')
+  //             .get().then((querySnapshot){
+  //           querySnapshot.docs.forEach((element) {
+  //             //element.get('name');
+  //             print(element.id);
+  //           });
+  //         });
+  //       }
+  //     });
+  //   });
+  // }
 
 
 
   //get snapshot of PatientList
-  fetchAllAppointments() async {
-    bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
-    return await FirebaseFirestore.instance.collection('users').doc(uid).collection("Appointments").get().then((QuerySnapshot querySnapshot){
-      querySnapshot.docs.forEach((element) {
-        /*if(doneOnce){
-          doneOnce = false;
-          FirebaseFirestore.instance.collection('users')
-              .doc(uid).collection('PatientList')
-              .get().then((querySnapshot){
-            querySnapshot.docs.forEach((element) {
-              print(element.data());
-            });
-          });
-        }*/
-        print(element.id);
-      });
-    });
-
-  }
+  // fetchAllAppointments() async {
+  //   Map<DateTime?, List<Event>> selectedEvents = {};
+  //   List<DateTime> dates=[];
+  //   bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
+  //    await FirebaseFirestore.instance.collection('users').doc(uid).collection("Appointments").get().then((QuerySnapshot querySnapshot){
+  //     querySnapshot.docs.forEach((element) {
+  //       /*if(doneOnce){
+  //         doneOnce = false;
+  //         FirebaseFirestore.instance.collection('users')
+  //             .doc(uid).collection('PatientList')
+  //             .get().then((querySnapshot){
+  //           querySnapshot.docs.forEach((element) {
+  //             print(element.data());
+  //           });
+  //         });
+  //       }*/
+  //       // DateTime date=;
+  //       // Event obj=Event(title: element.get('title'), time: element.get('appotime'));
+  //       // Map<DateTime?, List<Event>> event={(Map)date,<obj>};
+  //      selectedEvents.addEntries(element.get('appoDate')) ;
+  //     });
+  //   });
+  //    return dates;
+  //
+  // }
   // get patient stream
   // Stream<Patient> get patients {
   //   return FirebaseFirestore.instance.collection('users')

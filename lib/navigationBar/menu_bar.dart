@@ -1,6 +1,8 @@
 import 'dart:io';
 
-import 'package:doctors_diary/navigationBar/pages/Calendar/Calendar_data.dart';
+
+import 'package:doctors_diary/services/database.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';

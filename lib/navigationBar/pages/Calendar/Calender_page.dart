@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_diary/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -73,17 +74,55 @@ class _CalendarState extends State<Calendar> {
        })
     });
   }
+  Future fetchAllAppointments() async {
 
+    //fetch all docs in appointment section
+    await FirebaseFirestore.instance.collection('users').doc(
+        _auth.currentUser!.uid).collection("Appointments").get().then((
+        QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((element) {
+        //for each doc grab the date and time and convert it to DateTime and TimeOfDay resp from string
+        String s=element.get('appoTime');
+        DateTime dt=DateTime.parse(element.get('appoDate'));
+        TimeOfDay _startTime = TimeOfDay(hour:int.parse(s.split(":")[0]),minute: int.parse(s.split(":")[1]));
+
+        //add those date in selectedEvents array and pass the name and time as Event list inside it
+        if(selectedEvents[dt]!=null){
+          setState(() {
+            selectedEvents[dt]!.add(Event(
+              title: element.get('name'),
+              time: _startTime,
+            ));
+          });
+
+        }else{
+          setState(() {
+            selectedEvents[dt] = [
+              Event(
+                title: element.get('name'),
+                time: _startTime,
+              )
+            ];
+          });
+
+        }
+
+
+      });
+    });
+  }
+
+  late Future _future;
   @override
   void initState(){
     selectedEvents = {};
     super.initState();
-    //_selectedDay=_focusedDay;
+    _future=fetchAllAppointments();
 
   }
 
   //Get events
-  List<Event> _getEventsfromDay(DateTime date){
+  List<Event> getEventsfromDay(DateTime date){
     return selectedEvents[date] ?? [];
   }
 
@@ -194,14 +233,27 @@ class _CalendarState extends State<Calendar> {
                 children: <Widget>[
                   Text(s),
                   Text(
-                      (t.hour <= 9? "0"+ t.hour.toString() : t.hour.toString()) + (t.minute <= 9? ":0"+t.minute.toString() : ":"+t.minute.toString())
+                      //(t.hour <= 9? "0"+ t.hour.toString() : t.hour.toString()) + (t.minute <= 9? ":0"+t.minute.toString() : ":"+t.minute.toString())
+                    t.format(context).toString()
                   ),
                   //Delete Appointments
                   IconButton(
                     alignment: Alignment.centerRight,
-                    onPressed: (){
+                    onPressed: ()async{
+                      String deleteDoc="";//for id to doc to be deleted
+                       await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").
+                      where('name', isEqualTo:s).where('appoTime',isEqualTo: t.toString().substring(10,12)+":"+t.toString().substring(13,15)).get().then((querySnapshot) => {
+                       querySnapshot.docs.forEach((DocumentSnapshot element) {
+                       deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
+                       //print(patientId);
+                       })
+                       });
+
+                       //delete the doc by passing its id
+                      await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete();
                       setState(() {
-                        _getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
+                        getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
+
                       });
                       },
                     icon: Icon(Icons.delete),
@@ -219,7 +271,11 @@ class _CalendarState extends State<Calendar> {
   Widget build(BuildContext context) {
     //_onDaySelected(_selectedDay,_focusedDay);
 
-    return Scaffold(
+    return FutureBuilder(
+      future:  _future,
+      builder: (context,snapshot){
+    if(snapshot.connectionState== ConnectionState.done){
+      return Scaffold(
 
         body: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -239,8 +295,8 @@ class _CalendarState extends State<Calendar> {
                 startingDayOfWeek: StartingDayOfWeek.monday,
                 onDaySelected: _onDaySelected,
                 selectedDayPredicate: (day) {
-                return isSameDay(_selectedDay, day);
-              },
+                  return isSameDay(_selectedDay, day);
+                },
                 onFormatChanged: (format) {
                   setState(() {
                     _calendarFormat = format;
@@ -249,9 +305,9 @@ class _CalendarState extends State<Calendar> {
                 onPageChanged: (focusedDay) {
                   _focusedDay = focusedDay;
                 },
-                eventLoader: _getEventsfromDay,
+                eventLoader: getEventsfromDay,
               ),
-              ..._getEventsfromDay(_selectedDay).map((Event event) => cards(event.title, event.time)),
+              ...getEventsfromDay(_selectedDay).map((Event event) => cards(event.title, event.time)),
               //Padding for add appointment buttons
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -271,8 +327,8 @@ class _CalendarState extends State<Calendar> {
                               widget.patID,
                               widget.name,
                               _selectedDay.toString(),
-                              picked.toString());
-                          },
+                              (picked.toString().substring(10,12)+":"+picked.toString().substring(13,15)));
+                        },
                         label: Text("Add Appointments"),
                         icon: Icon(Icons.add),
                       ),
@@ -291,6 +347,14 @@ class _CalendarState extends State<Calendar> {
             ],
           ),
         ),
+      );
+    }
+    else{
+      return Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+      },
     );
   }
 }

@@ -40,10 +40,11 @@ class DatabaseService{
     } );
   }
 
-  Future createSubcollectionForAppointments(String pid, String name, String appoDate, String appoTime) async{
+  Future createSubcollectionForAppointments({required String pid, required String name,required String mobile, required String appoDate, required String appoTime}) async{
     return  await FirebaseFirestore.instance.collection('users')
         .doc(uid)
         .collection('Appointments').add({
+      'mobile':mobile,
       'pid' : pid,
       'name' : name,
       'appoDate' : appoDate,

@@ -76,7 +76,7 @@ class _ContactsListState extends State<ContactsList> {
               }
 
 
-              //await DatabaseService(uid: _auth.currentUser!.uid).getPatientByNameAndNumber(contact.info!.displayName.toString(), contact.info!.phones!.elementAt(0).value.toString());
+              //await DatabaseService(uid: _auth.rrecuntUser!.uid).getPatientByNameAndNumber(contact.info!.displayName.toString(), contact.info!.phones!.elementAt(0).value.toString());
 
             },
             title: Text(contact.info!.displayName.toString()),

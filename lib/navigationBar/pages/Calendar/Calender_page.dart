@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_diary/screens/home/home_temp.dart';
 import 'package:doctors_diary/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,13 +26,19 @@ class CalendarPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Calender'),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
+    return WillPopScope(
+      onWillPop:()async{ Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>HomeTemp()), (Route<dynamic> route) => false);
+      return false;},
+
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Calender'),
+          centerTitle: true,
+          backgroundColor: Colors.blue,
+
+        ),
+        body: Calendar(name: name,mobile: mobile,isFromContactDetails:isFromContactDetails, patID: patID),
       ),
-      body: Calendar(name: name,mobile: mobile,isFromContactDetails:isFromContactDetails, patID: patID),
     );
   }
 }
@@ -251,10 +258,12 @@ class _CalendarState extends State<Calendar> {
 
                        //delete the doc by passing its id
                       await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete();
+
                       setState(() {
                         getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
 
                       });
+
                       },
                     icon: Icon(Icons.delete),
                   )
@@ -264,6 +273,8 @@ class _CalendarState extends State<Calendar> {
           )
       ),
   );
+
+
 
 
   //Table Calendar and events
@@ -282,8 +293,9 @@ class _CalendarState extends State<Calendar> {
           child: Column(
             children: [
               TableCalendar(
-                firstDay:  DateTime.utc(2000, 1, 1),
+                firstDay:  DateTime.now(),
                 lastDay:  DateTime.utc(2100, 12, 31),
+
 
                 focusedDay: _focusedDay,
 
@@ -324,10 +336,11 @@ class _CalendarState extends State<Calendar> {
                           //TODO create doc in database
                           String uid = _auth.currentUser!.uid;
                           DatabaseService(uid: uid).createSubcollectionForAppointments(
-                              widget.patID,
-                              widget.name,
-                              _selectedDay.toString(),
-                              (picked.toString().substring(10,12)+":"+picked.toString().substring(13,15)));
+                            mobile:widget.mobile,
+                              pid:widget.patID,
+                              name:widget.name,
+                              appoDate:_selectedDay.toString(),
+                              appoTime:(picked.toString().substring(10,12)+":"+picked.toString().substring(13,15)));
                         },
                         label: Text("Add Appointments"),
                         icon: Icon(Icons.add),

@@ -64,12 +64,27 @@ class _HomeTempState extends State<HomeTemp> {
         centerTitle: true,
         backgroundColor: Colors.indigo[900],
         actions: <Widget>[
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientList()));
-              },
-              icon: Icon(Icons.person_add),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+            child: ElevatedButton(onPressed:
+                      () async {
+                        await _auth.signOut();
+                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+                        Navigator.pushReplacement(context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => LoginScreen()),);
+
+                },
+
+             child:
+                 Text("Logout",style: TextStyle(fontWeight: FontWeight.bold)),
+
+              style: ElevatedButton.styleFrom(primary: Colors.red[900],padding: EdgeInsets.all(10)),
+            ),
           ),
+
+
+
         ],
       ),
       body: FutureBuilder(future: _fetch,
@@ -96,16 +111,13 @@ class _HomeTempState extends State<HomeTemp> {
       },),
 
 
-      floatingActionButton: FloatingActionButton(
-        child:Icon(Icons.logout),
-        onPressed: () async{
-          await _auth.signOut();
-          //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-          Navigator.pushReplacement(context,
-            MaterialPageRoute(
-                builder: (BuildContext context) => LoginScreen()),);
+      floatingActionButton:FloatingActionButton.extended(
 
+        onPressed: ()  {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientList()));
         },
+        label: Text("Add Appointments"),
+        icon: Icon(Icons.add),
       ),
     );
   }

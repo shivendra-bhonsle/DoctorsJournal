@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_diary/screens/home/home_temp.dart';
 import 'package:doctors_diary/services/database.dart';
@@ -224,6 +222,9 @@ class _CalendarState extends State<Calendar> {
       });
 
     }
+    //TODO set nextAppo
+    //await setNextAppo(/*_selectedDay.toString()*/);
+
     print(selectedEvents);
 
 
@@ -257,13 +258,18 @@ class _CalendarState extends State<Calendar> {
                        });
 
                        //delete the doc by passing its id
-                      await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete();
+                      await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete()
+                          .then((value) async
+                      {
+                      await setNextAppoAfterDelete(s);
+                      });
 
                       setState(() {
                         getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
 
                       });
 
+                      //await setNextAppo();
                       },
                     icon: Icon(Icons.delete),
                   )
@@ -335,13 +341,17 @@ class _CalendarState extends State<Calendar> {
                           await addAppointments();
                           //TODO create doc in database
                           String uid = _auth.currentUser!.uid;
-                          DatabaseService(uid: uid).createSubcollectionForAppointments(
+                          await DatabaseService(uid: uid).createSubcollectionForAppointments(
                             mobile:widget.mobile,
                               pid:widget.patID,
                               name:widget.name,
                               appoDate:_selectedDay.toString(),
-                              appoTime:(picked.toString().substring(10,12)+":"+picked.toString().substring(13,15)));
-                        },
+                              appoTime:(picked.toString().substring(10,12)+":"+picked.toString().substring(13,15))).then((value) =>
+                          {
+                          setNextAppo()
+                          });
+
+                          },
                         label: Text("Add Appointments"),
                         icon: Icon(Icons.add),
                       ),
@@ -370,4 +380,76 @@ class _CalendarState extends State<Calendar> {
       },
     );
   }
+
+  Future setNextAppo() async {
+
+    DateTime minDt = DateTime.parse("2100-01-01 00:00:00Z");
+
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+       .where('name',isEqualTo: widget.name)/*.orderBy('appoDate')*/
+        .get().then((value) => {
+      value.docs.forEach((element) async {
+        DateTime Dt = DateTime.parse(element.data()['appoDate']);
+        if(Dt.isBefore(minDt)){
+          minDt = Dt;
+        }
+
+      }
+
+      ),
+        //print(_nextAppo),
+        print("before setting nextAppo")
+    }).then((value) async {
+          await FirebaseFirestore.instance.collection('users').doc(
+          FirebaseAuth.instance.currentUser!.uid).
+          collection('PatientList').doc(widget.patID).set(
+          {'nextAppo': minDt.toString()},
+          SetOptions(merge: true));
+    });
+
+  }
+
+
+  Future setNextAppoAfterDelete(String name) async{
+    //to set nextAppo in "Patientlist->patient doc" to 'not assigned'
+    String patID_ofPat_toBeDeleted = " ";
+    String nextAppoStatus = "";
+    DateTime minDt = DateTime.parse("2100-01-01 00:00:00Z");
+
+    //get patDoc from Patientlist
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("PatientList").
+    where('name', isEqualTo: name).get().then((value) => {
+      value.docs.forEach((element) {
+        patID_ofPat_toBeDeleted = element.id.toString();
+      })
+    });
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+        .where('name',isEqualTo: name)
+        .get().then((value) => {
+      value.docs.forEach((element) async {
+
+        DateTime Dt = DateTime.parse(element.data()['appoDate']);
+        if(Dt.isBefore(minDt)){
+          minDt = Dt;
+        }
+      }),
+      //print(_nextAppo),
+      print("before setting nextAppo"),
+
+      if(minDt == DateTime.parse("2100-01-01 00:00:00Z")){
+        nextAppoStatus = "Not Assigned"
+      }else{
+        nextAppoStatus = minDt.toString()
+      }
+
+    }).then((value) async {
+      await FirebaseFirestore.instance.collection('users').doc(
+          FirebaseAuth.instance.currentUser!.uid).
+      collection('PatientList').doc(patID_ofPat_toBeDeleted).set(
+          {'nextAppo': nextAppoStatus},
+          SetOptions(merge: true));
+    });
+  }
+
+
 }

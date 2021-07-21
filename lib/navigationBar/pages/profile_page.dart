@@ -1,8 +1,6 @@
  import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctors_diary/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:doctors_diary/services/database.dart';
 import 'package:google_fonts/google_fonts.dart';
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -22,18 +20,7 @@ class _ProfileState extends State<Profile> {
 
 
   }
-  /*Future<void> setText() async{
 
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid).fetchName().then((value) => {
-      setState((){
-        name=value.toString();
-      })
-    });
-    print(name);
-
-
-
-  }*/
   //DatabaseService databaseService=DatabaseService(uid: auth.currentUser!.uid);
   Future<String?> createAlertDialog(BuildContext context){
     TextEditingController customController=TextEditingController();
@@ -72,110 +59,110 @@ class _ProfileState extends State<Profile> {
   @override
   Widget build(BuildContext context) {
     //setText();
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.indigo[900],
+    return  Scaffold(
+        appBar: AppBar(
 
-      ),
-      body: SafeArea(
+          title: Text('Profile'),
+          centerTitle: true,
+          backgroundColor: Colors.indigo[900],
 
-        child:FutureBuilder(
-          future:  FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((value) {
-
-
-            name=value.data()!['name'].toString();
-            mobile=value.data()!['mobile'].toString();
-            print(name);
-            print(mobile);
+        ),
+        body: SafeArea(
+          child: FutureBuilder(
+            future:  FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).get().then((value) {
 
 
-          }),
-          builder: (context,snapshot){
-            if(snapshot.connectionState== ConnectionState.done){
-              return Column(
-                children: [
-                  Container(
+              name=value.data()!['name'].toString();
+              mobile=value.data()!['mobile'].toString();
+              print(name);
+              print(mobile);
 
-                    width: double.infinity,
-                    child:
-                    Column(
-                      children: [
-                        SizedBox(height: 20,),
-                        Center(
-                          child: CircleAvatar(
-                            child: Text(
-                              getInitials(name),
 
-                              textScaleFactor: 3.0,
+            }),
+            builder: (context,snapshot){
+              if(snapshot.connectionState== ConnectionState.done){
+                return Column(
+                  children: [
+                    Container(
+
+                      width: double.infinity,
+                      child:
+                      Column(
+                        children: [
+                          SizedBox(height: 20,),
+                          Center(
+                            child: CircleAvatar(
+                              child: Text(
+                                getInitials(name),
+
+                                textScaleFactor: 3.0,
+                              ),
+                              maxRadius: 50.0,
                             ),
-                            maxRadius: 50.0,
                           ),
-                        ),
-                        SizedBox(height: 20,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
 
-                            Text(name,
+                              Text(name,
 
-                              style:
+                                style:
 
-                              GoogleFonts.roboto(fontWeight: FontWeight.normal,fontSize: 30, fontStyle: FontStyle.italic),
+                                GoogleFonts.roboto(fontWeight: FontWeight.normal,fontSize: 30, fontStyle: FontStyle.italic),
 
-                            ),
-                            IconButton(
-                                onPressed: (){
-                                  createAlertDialog(context).then((value) {
-                                    if(value!.isNotEmpty){
-                                      editName(value.toString());
+                              ),
+                              IconButton(
+                                  onPressed: (){
+                                    createAlertDialog(context).then((value) {
+                                      if(value!.isNotEmpty){
+                                        editName(value.toString());
 
-                                    }
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (BuildContext context) => super.widget));
-
-
-                                  });
+                                      }
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (BuildContext context) => super.widget));
 
 
-
-                                },
-                                icon: Icon(Icons.edit),
-                              color: Colors.grey,
-                            )
-                          ],
-                        ),
+                                    });
 
 
-                        SizedBox(height: 20.0,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(mobile,
-                            style: GoogleFonts.roboto(fontWeight: FontWeight.bold,fontSize: 20, fontStyle: FontStyle.italic),),
 
-                          ],
-                        )
+                                  },
+                                  icon: Icon(Icons.edit),
+                                color: Colors.grey,
+                              )
+                            ],
+                          ),
 
-                      ],
-                    ),
-                  )
-                ],
-              );
-            }
-            else {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
 
-          },
-        )
+                          SizedBox(height: 20.0,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(mobile,
+                              style: GoogleFonts.roboto(fontWeight: FontWeight.bold,fontSize: 20, fontStyle: FontStyle.italic),),
 
-      ),
+                            ],
+                          )
+
+                        ],
+                      ),
+                    )
+                  ],
+                );
+              }
+              else {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+
+            },
+          ),
+        ),
+
     );
   }
 

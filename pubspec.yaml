@@ -45,6 +45,8 @@ dependencies:
   url_launcher: ^6.0.7
   mailto: ^2.0.0
   cloud_functions: ^1.1.2
+  shared_preferences: ^2.0.6
+  #background_fetch: ^1.0.1
 
 dev_dependencies:
   flutter_test:

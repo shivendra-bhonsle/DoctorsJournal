@@ -1,9 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
-import 'package:doctors_diary/navigationBar/pages/Contacts/ContactDetails.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:doctors_diary/services/database.dart';
 
 
 
@@ -95,9 +94,65 @@ class _AppointmentState extends State<Appointment> {
 
                 Row(
                   children: [
+                    Expanded(
+                      flex: 2,
+                        child: ElevatedButton(
+                          onPressed: ()async{
+                            String deleteDoc="";//for id to doc to be deleted
+                            await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments").
+                            where('name', isEqualTo:today.name).where('appoTime',isEqualTo: today.time).get().then((querySnapshot) => {
+                              querySnapshot.docs.forEach((DocumentSnapshot element) {
+                                deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
+                                //print(patientId);
+                              })
+                            });
+
+                            //delete the doc by passing its id
+                            await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete();
+                            setState(() {
+                              widget.appointmentsToday.removeWhere((element) => element.name==today.name && element.time==today.time);
+
+                            });
+
+
+                            String patDoc="";//for id to doc of Patient
+                            await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("PatientList").
+                            where('name', isEqualTo:today.name).where('phoneno',isEqualTo: today.mobile).get().then((querySnapshot) => {
+                              querySnapshot.docs.forEach((DocumentSnapshot element) {
+                                patDoc = element.id.toString(); //get the id of the doc by searching by time and name
+                                //print(patientId);
+                              })
+                            });
+
+                            //fetching completed appointment i.e. nextAppo from database
+                            String nextAppo_fetched = " ";
+                            await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                                .getPatientNextAppo(patDoc)
+                                .then((value) => {
+                                  nextAppo_fetched = value.toString()
+                            });
+
+                            //setting lastAppo to nextAppo
+                            await FirebaseFirestore.instance.collection('users').doc(
+                                FirebaseAuth.instance.currentUser!.uid).
+                            collection('PatientList').doc(patDoc).set(
+                                {'lastAppo': nextAppo_fetched},
+                                SetOptions(merge: true));
+
+                            //fetch and set nextAppo to coming appointment
+                            await setNextAppointment(today.name, patDoc);
+
+
+                          },
+                          child: Text('Done'),
+                            style: ElevatedButton.styleFrom(
+                                primary: Colors.green,
+                        )
+                        ),
+                    ),
 
                     Expanded(
-                      flex: 5,
+                      flex: 3,
                       child: SizedBox(width: 10.0,),
                     ),
                     Expanded(
@@ -118,6 +173,21 @@ class _AppointmentState extends State<Appointment> {
                           widget.appointmentsToday.removeWhere((element) => element.name==today.name && element.time==today.time);
 
                         });
+
+
+                        String patDoc="";//for id to doc of Patient
+                        await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("PatientList").
+                        where('name', isEqualTo:today.name).where('phoneno',isEqualTo: today.mobile).get().then((querySnapshot) => {
+                          querySnapshot.docs.forEach((DocumentSnapshot element) {
+                            patDoc = element.id.toString(); //get the id of the doc by searching by time and name
+                            //print(patientId);
+                          })
+                        });
+
+
+                        //to fetch and set nextAppo to earliest coming appointment
+                        await setNextAppointment(today.name, patDoc);
+
                       } ,
                         child: Text(
                             'Cancel'
@@ -137,4 +207,59 @@ class _AppointmentState extends State<Appointment> {
 
     );
   }
+
+  // Future<String?> fetchNextAppointment(String name) async {
+  //   bool isOnce = false;
+  //   String? _nextAppo = " ";
+  //   String s=DateTime.now().toString().substring(0,11)+"00:00:00.000Z";
+  //   print(s);
+  //
+  //   await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+  //       .where('name',isEqualTo: name)
+  //       .where('appoDate',isGreaterThanOrEqualTo:s).orderBy('appoDate').get().then((value) => {
+  //     value.docs.forEach((element) {
+  //       if(!isOnce){
+  //         print(element.id);
+  //         isOnce = true;
+  //         _nextAppo= element.data()['appoDate'].toString();
+  //       }
+  //
+  //     })
+  //
+  //   });
+  //
+  //   return _nextAppo;
+  // }
+
+  Future setNextAppointment(String name, String patDoc) async{
+    //to set nextAppo in "Patientlist->patient doc" to 'not assigned'
+    String nextAppoStatus = "";
+    DateTime minDt = DateTime.parse("2100-01-01 00:00:00Z");
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+        .where('name',isEqualTo: name)
+        .get().then((value) => {
+      value.docs.forEach((element) async {
+        DateTime Dt = DateTime.parse(element.data()['appoDate']);
+        if(Dt.isBefore(minDt)){
+          minDt = Dt;
+        }
+      }),
+      //print(_nextAppo),
+      print("before setting nextAppo"),
+
+        if(minDt == DateTime.parse("2100-01-01 00:00:00Z")){
+          nextAppoStatus = "Not Assigned"
+        }else{
+          nextAppoStatus = minDt.toString()
+        }
+
+    }).then((value) async {
+      await FirebaseFirestore.instance.collection('users').doc(
+          FirebaseAuth.instance.currentUser!.uid).
+      collection('PatientList').doc(patDoc).set(
+          {'nextAppo': nextAppoStatus},
+          SetOptions(merge: true));
+    });
+  }
+
 }

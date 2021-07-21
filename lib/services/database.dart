@@ -1,9 +1,6 @@
-//import 'dart:html';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+
 
 String nextAppo = 'DD/MM/YYYY';
 String lastAppo = 'dd/mm/yyyy';
@@ -121,7 +118,7 @@ class DatabaseService{
     }).catchError((e){
       print(e);
     });
-    return _nextAppo;
+    return _nextAppo.substring(0,10);
   }
 
   //TODO get lastAppo from database
@@ -140,6 +137,27 @@ class DatabaseService{
       print(e);
     });
     return _lastappo;
+  }
+
+  Future toDeletePastAppointments() async{
+    //DateTime today = DateTime.now();
+    DateTime temp = DateTime.now();
+    String hole = DateTime.now().toString().substring(0,10)+" 00:00:00Z";
+    DateTime today = DateTime.parse(hole);
+    String appoID = " ";
+    await FirebaseFirestore.instance.collection('users').doc(uid)
+        .collection('Appointments').get().then((value) {
+          value.docs.forEach((element)  async {
+            print("today = $today");
+            temp = DateTime.parse(element.data()['appoDate'].toString());
+            appoID = element.id.toString();
+            if(temp.isBefore(today)){
+              print("***today = $today");
+              await FirebaseFirestore.instance.collection('users').doc(uid)
+                  .collection('Appointments').doc(appoID).delete();
+            }
+          });
+    });
   }
 
   //get snapshot of PatientList
@@ -190,26 +208,5 @@ class DatabaseService{
   //    return dates;
   //
   // }
-  // get patient stream
-  // Stream<Patient> get patients {
-  //   return FirebaseFirestore.instance.collection('users')
-  //       .doc(uid)
-  //       .collection('PatientList').snapshots().map(_PatientListFromSnapshot)
-  // }
-  // }
 
-  // patient form snapshot
-  // List<Patient> _PatientListFromSnapshot(QuerySnapshot snapshot){
-  //   return snapshot.hasdata? snapshot.docs.map((doc){
-  //     return Patient(
-  //         pid: doc.data()['pid'] ?? '',
-  //         name: doc.data()['name'] ?? '',
-  //         phoneno: phoneno,
-  //         age: doc.data('age')?? 0,
-  //         weight: weight,
-  //         nextAppo: nextAppo,
-  //         lastAppo: lastAppo,
-  //         description: description
-  //     );
-  //   }).toList();
   }

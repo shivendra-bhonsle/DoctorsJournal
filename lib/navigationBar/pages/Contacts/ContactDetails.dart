@@ -1,12 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:contacts_service/contacts_service.dart';
-import 'package:doctors_diary/models/patient.dart';
 import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:doctors_diary/services/database.dart';
-import 'package:doctors_diary/shared/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'AppContact.dart';
@@ -423,10 +420,7 @@ class _ContactDetailsState extends State<ContactDetails> {
         ),
       ),
       bottomSheet: Container(
-        height: MediaQuery
-            .of(context)
-            .size
-            .height - 780,
+        height: 60/* MediaQuery.of(context).size.height - 780*/,
         margin: EdgeInsets.only(bottom: 10),
         alignment: Alignment.center,
         child: Row(

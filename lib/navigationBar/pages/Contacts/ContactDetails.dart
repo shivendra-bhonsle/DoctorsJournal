@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'AppContact.dart';
 
 //CONTACT DETAILS PAGE
@@ -31,24 +32,15 @@ class _ContactDetailsState extends State<ContactDetails> {
   String patDocId = "";
   String description = "Loading data... Please wait";
   String age = "...";
-  String nextAppo = "...";
-  String lastAppo = "...";
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String nextAppo = "Not assigned";
+  String lastAppo = "Not assigned";
   FirebaseAuth _auth = FirebaseAuth.instance;
-
-  // bool _isEditingAge = false;
-  // TextEditingController _editingControllerAge = new TextEditingController();
-  // String initialAge = "00";
 
 
   @override
   void initState() {
     super.initState();
     _editingControllerNotes = TextEditingController(text: initialText);
-    //getPatientData();
-    //_editingControllerAge = TextEditingController(text: initialAge);
-    //fetchDescription();
-    //fetchAge();
     fetchPatientData();
   }
 
@@ -181,6 +173,7 @@ class _ContactDetailsState extends State<ContactDetails> {
           break;
       }
     }
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -290,7 +283,6 @@ class _ContactDetailsState extends State<ContactDetails> {
                     print(age)
                   }),
                   builder: (context, snapshot) {
-                    //if(snapshot.connectionState != ConnectionState.done){
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
@@ -302,37 +294,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                             SizedBox(width: 10,),
                             Text("$age years", style: GoogleFonts.roboto(
                                 fontSize: 22, fontWeight: FontWeight.bold)),
-                            // FutureBuilder(
-                            //     future:  FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid)
-                            //         .collection('PatientList') .doc(
-                            //       DatabaseService(uid: _auth.currentUser!.uid).getDocIdOfPatient(
-                            //           widget.contact.info!.displayName.toString(),
-                            //           widget.contact.info!.phones!.elementAt(0).value.toString()
-                            //       ).toString()
-                            //     )
-                            //         .get().then((doc) => {
-                            //       print(doc.id),
-                            //       //print(doc.data()),
-                            //       age = doc.data()!['age'].toString(),
-                            //       print(age)
-                            //
-                            //     }),
-                            //     builder: (context, snapshot){
-                            //       if(snapshot.connectionState != ConnectionState.done)
-                            //         return Text("Loading...");
-                            //       return Text(age);
-                            //     }),
-                            // FutureBuilder(
-                            //     future: DatabaseService(uid: _auth.currentUser!.uid).getPatientAge(DatabaseService(uid: _auth.currentUser!.uid)
-                            //         .getDocIdOfPatient(widget.contact.info!.displayName.toString(),
-                            //         widget.contact.info!.phones!.elementAt(0).value
-                            //             .toString()).toString()),
-                            //     builder: (context, snapshot){
-                            //       if(snapshot.connectionState != ConnectionState.done)
-                            //         return Text("Loading...");
-                            //       return Text(age);
-                            // }),
-                            //_editTitleTextFieldAge(),
+
                             SizedBox(width: 40,),
                             IconButton(
                               splashRadius: 20,
@@ -341,7 +303,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                                     value) async {
                                   if (value!.isNotEmpty) {
                                     //age = value.toString();
-                                    await editAge(/*value.toString()*/);
+                                    await editAge();
                                   }
                                   Navigator.pushReplacement(
                                       context,
@@ -359,16 +321,15 @@ class _ContactDetailsState extends State<ContactDetails> {
                         SizedBox(height: 10,),
                         Row(
                           children: [
-                            Text('Next Appointment:',
+                            Text('Next Appointment: ',
                               style: TextStyle(fontSize: 22),
                               textAlign: TextAlign.left,),
-                            Card(color: Colors.white,
-                              elevation: 1,
-                              child: Text(" $nextAppo",
-                                style: GoogleFonts.roboto(fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.green[700]),),
-                            )
+                            Text(
+                              nextAppo,
+                              style: TextStyle(color: Colors.green,fontSize: 20,fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+
                           ],
                         ),
                         SizedBox(height: 20,),
@@ -376,13 +337,12 @@ class _ContactDetailsState extends State<ContactDetails> {
                           children: [
                             Text('Last Appointment: ',
                               style: TextStyle(fontSize: 22),),
-                            Card(color: Colors.white,
-                              elevation: 1,
-                              child: Text(" $lastAppo",
-                                style: GoogleFonts.roboto(fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.brown[900]),),
-                            )
+                            Text(
+                              lastAppo,
+                              style: TextStyle(color: Colors.red,fontSize: 20,fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.center,
+                            ),
+
                           ],
                         ),
                         SizedBox(height: 20,),
@@ -390,17 +350,7 @@ class _ContactDetailsState extends State<ContactDetails> {
                             fontSize: 20, fontWeight: FontWeight.bold),),
                         Container(padding: EdgeInsets.all(12), width: double.infinity, color: Colors.teal[50], child: _editTitleTextField(description))
 
-                        // FutureBuilder(
-                        //     future: DatabaseService(uid: _auth.currentUser!.uid).getPatientDesc(DatabaseService(uid: _auth.currentUser!.uid)
-                        //         .getDocIdOfPatient(widget.contact.info!.displayName.toString(),
-                        //         widget.contact.info!.phones!.elementAt(0).value
-                        //             .toString()).toString()),
-                        //     builder: (context, snapshot){
-                        //       if(snapshot.connectionState != ConnectionState.done)
-                        //         return _editTitleTextField("Loading data... Please wait");
-                        //       return _editTitleTextField(description);
-                        //     }
-                        // ),
+
 
                       ],
                     );
@@ -448,7 +398,7 @@ class _ContactDetailsState extends State<ContactDetails> {
 
             ElevatedButton(
               onPressed: () async {
-                await editNotes(/*age*/); //calling function to edit description
+                await editNotes(); //calling function to edit description
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -474,34 +424,9 @@ class _ContactDetailsState extends State<ContactDetails> {
   Future editNotes() async {
     //passing age variable from ContactDetailsState class because this function is outside that class so "age" can't be accessed directly
     String patID = "";
-    var isPatientPresent = false;
-    //
-    // await _firestore
-    //     .collection('users').doc(_auth.currentUser!.uid).collection(
-    //     'PatientList')
-    //     .where('name', isEqualTo: widget.contact.info!.displayName.toString())
-    //     .where('phoneno',
-    //     isEqualTo: widget.contact.info!.phones!.elementAt(0).value
-    //         .toString()) //check if a doc of patient with same mobile number is already present
-    //     .get()
-    //     .then((result) {
-    //   if (result.docs.length > 0) {
-    //     setState(() {
-    //       isPatientPresent = true; //if yes then set patient present to true
-    //     });
-    //   }
-    //
-    // });
-    /*if (isPatientPresent ==
-        false) { //if patient is not present create new doc and set the desc as given
-      await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-          .createSubcollectionForPatientList(
-          widget.contact.info!.displayName.toString(),
-          widget.contact.info!.phones!.elementAt(0).value.toString(), age,
-          'DD/MM/YYYY', 'dd/mm/yyyy', _editingControllerNotes.text);
-    }
-    else {*/
+
       //if patient is already present
+    try{
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .getDocIdOfPatient( //find the id of that patient
           widget.contact.info!.displayName.toString(),
@@ -520,109 +445,86 @@ class _ContactDetailsState extends State<ContactDetails> {
           patID).set(
           {'description': _editingControllerNotes.text},
           SetOptions(merge: true));
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#2 Unable to perform operation. Please check your connection")));
+          }
+
     //}
   }
 
-  // Future<void> fetchDescription() async {
-  //   String patID = "";
-  //   await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-  //       .getDocIdOfPatient(
-  //       widget.contact.info!.displayName.toString(),
-  //       widget.contact.info!.phones!.elementAt(0).value.toString()).then((value) =>
-  //   {
-  //     setState((){
-  //       patID = value.toString();
-  //     })
-  //   });
-  //   print(patID);
-  //   await DatabaseService(uid: _auth.currentUser!.uid).getPatientDesc(patID).then((value) =>
-  //   {
-  //     setState((){
-  //       description = value.toString();
-  //     })
-  //   });
-  //   print(description);
-  // }
-  //
-  // //Fetching age
-  // Future<void> fetchAge() async {
-  //   String patID = "";
-  //   await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-  //       .getDocIdOfPatient(
-  //       widget.contact.info!.displayName.toString(),
-  //       widget.contact.info!.phones!.elementAt(0).value.toString()).then((value) =>
-  //   {
-  //     setState((){
-  //       patID = value.toString();
-  //     })
-  //   });
-  //   print("PatId For Age: $patID");
-  //   await DatabaseService(uid: _auth.currentUser!.uid).getPatientAge(patID).then((value) =>
-  //   {
-  //     setState((){
-  //       age = value.toString();
-  //     })
-  //   });
-  //   print(age);
-  // }
+
 
   Future<void> fetchPatientData() async {
-    String patID = "";
-    await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-        .getDocIdOfPatient(
-        widget.contact.info!.displayName.toString(),
-        widget.contact.info!.phones!.elementAt(0).value.toString()).then((
-        value) =>
-    {
-      setState(() {
-        patID = value.toString();
-        patDocId = patID; //variable used to pass patientID to the calendar
-      })
-    });
-    print("PatId For Age: $patID");
+    try{
+      String patID = "";
+      await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+          .getDocIdOfPatient(
+          widget.contact.info!.displayName.toString(),
+          widget.contact.info!.phones!.elementAt(0).value.toString()).then((
+          value) =>
+      {
+        setState(() {
+          patID = value.toString();
+          patDocId = patID; //variable used to pass patientID to the calendar
+        })
+      });
+      print("PatId For Age: $patID");
 
-    //getting age
-    await DatabaseService(uid: _auth.currentUser!.uid)
-        .getPatientAge(patID)
-        .then((value) =>
-    {
-      setState(() {
-        age = value.toString();
-      })
-    });
-    print(age);
+      //getting age
+      await DatabaseService(uid: _auth.currentUser!.uid)
+          .getPatientAge(patID)
+          .then((value) =>
+      {
+        setState(() {
+          age = value.toString();
+        })
+      });
+      print(age);
 
-    //getting description
-    DatabaseService(uid: _auth.currentUser!.uid).getPatientDesc(patID).then((
-        value) =>
-    {
-      setState(() {
-        description = value.toString();
-      })
-    });
-    print(description);
+      //getting description
+      DatabaseService(uid: _auth.currentUser!.uid).getPatientDesc(patID).then((
+          value) =>
+      {
+        setState(() {
+          description = value.toString();
+        })
+      });
+      print(description);
 
-    //getting nextAppo
-    DatabaseService(uid: _auth.currentUser!.uid)
-        .getPatientNextAppo(patID)
-        .then((value) =>
-    {
-      setState(() {
-        nextAppo = value.toString();
-      })
-    });
-    print(nextAppo);
+      //getting nextAppo
+      DatabaseService(uid: _auth.currentUser!.uid)
+          .getPatientNextAppo(patID)
+          .then((value) =>
+      {
+        setState(() {
+          nextAppo=value.toString()=="Not assigned"?"Not assigned": DateFormat("dd-MM-yy").format(DateTime.parse(value.toString()));
+          //= value.toString();
+        })
+      });
+      print(nextAppo);
 
-    //getting lastAppo
-    DatabaseService(uid: _auth.currentUser!.uid)
-        .getPatientLastAppo(patID)
-        .then((value) =>
-    {
-      setState(() {
-        lastAppo = value.toString();
-      })
-    });
-    print(lastAppo);
+      //getting lastAppo
+      DatabaseService(uid: _auth.currentUser!.uid)
+          .getPatientLastAppo(patID)
+          .then((value) =>
+      {
+        setState(() {
+          lastAppo = value.toString()=="Not assigned"?"Not assigned": DateFormat("dd-MM-yy").format(DateTime.parse(value.toString()));
+        })
+      });
+      print(lastAppo);
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#3 Unable to perform operation. Please check your connection")));
+    }
+
   }
 
 
@@ -663,33 +565,7 @@ class _ContactDetailsState extends State<ContactDetails> {
 
   Future editAge(/*String newAge*/) async {
     String patID = "";
-    /*bool isPatientExisting = false;
-    await _firestore
-        .collection('users').doc(_auth.currentUser!.uid).collection(
-        'PatientList')
-        .where('name', isEqualTo: widget.contact.info!.displayName.toString())
-        .where('phoneno',
-        isEqualTo: widget.contact.info!.phones!.elementAt(0).value
-            .toString()) //check if a doc of patient with same mobile number is already present
-        .get()
-        .then((result) {
-      if (result.docs.length > 0) {
-        setState(() {
-          isPatientExisting = true; //if yes then set patient present to true
-        });
-      }
-    });
-// patient collection created only when notes edited
-    if (isPatientExisting ==
-        false) { //if patient is not present create new doc and set the desc as given
-      await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
-          .createSubcollectionForPatientList(
-          widget.contact.info!.displayName.toString(),
-          widget.contact.info!.phones!.elementAt(0).value.toString(), ageController.text,
-          'DD/MM/YYYY', 'dd/mm/yyyy', _editingControllerNotes.text);
-    }
-    else {*/
-      //if patient is already present
+    try{
       await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
           .getDocIdOfPatient( //find the id of that patient
           widget.contact.info!.displayName.toString(),
@@ -707,6 +583,15 @@ class _ContactDetailsState extends State<ContactDetails> {
       collection('PatientList').doc(patID).set(
           {'age': ageController.text},
           SetOptions(merge: true));
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#4 Unable to perform operation. Please check your connection")));
+    }
+      //if patient is already present
+
     //}
   }
 }

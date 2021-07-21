@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/ContactDetails.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:doctors_diary/services/database.dart';
@@ -37,21 +36,31 @@ class _ContactsListState extends State<ContactsList> {
           return ListTile(
             onTap: () async {
               if (contact.info!.phones!.isNotEmpty) {
-                //bool isPatPresent=false;
-                await DatabaseService(uid: _auth.currentUser!.uid)
-                    .getDocIdOfPatient(contact.info!.displayName.toString(),
-                    contact.info!.phones!.elementAt(0).value.toString())
-                    .then((value) async =>
-                {
-                  if(value.toString() == "Not fetched"){
-                    await DatabaseService(uid: _auth.currentUser!.uid)
-                        .createSubcollectionForPatientList(
-                        contact.info!.displayName.toString(),
-                        contact.info!.phones!.elementAt(0).value.toString(), "",
-                        'DD/MM/YYYY', 'dd/mm/yyyy', "")
+                final snackBar = SnackBar(
+                    content: Text('Loading'),duration: const Duration(seconds: 2),);
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                try{
+                  await DatabaseService(uid: _auth.currentUser!.uid)
+                      .getDocIdOfPatient(contact.info!.displayName.toString(),
+                      contact.info!.phones!.elementAt(0).value.toString())
+                      .then((value) async =>
+                  {
+                    if(value.toString() == "Not fetched"){
+                      await DatabaseService(uid: _auth.currentUser!.uid)
+                          .createSubcollectionForPatientList(
+                          contact.info!.displayName.toString(),
+                          contact.info!.phones!.elementAt(0).value.toString(), "--",
+                          'Not assigned', 'Not assigned', "")
+                    }
                   }
+                  );
                 }
-                );
+                catch(e){
+                  final snackBar = SnackBar(
+                    content: Text('#1 Unable to perform operation. Please check your connection'),);
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+
 
 
                 Navigator.of(context).push(MaterialPageRoute(
@@ -76,15 +85,14 @@ class _ContactsListState extends State<ContactsList> {
               }
 
 
-              //await DatabaseService(uid: _auth.rrecuntUser!.uid).getPatientByNameAndNumber(contact.info!.displayName.toString(), contact.info!.phones!.elementAt(0).value.toString());
 
             },
             title: Text(contact.info!.displayName.toString()),
             subtitle: Text(number
-              //contact!.info!.phones!.elementAt(0).value.toString(),
+
               //getting the value of 1st available number of that contact
             ),
-            leading: CircleAvatar(child: Text(contact.info!.initials()),),
+            leading: CircleAvatar(child: Text(contact.info!.initials(),),backgroundColor: contact.color,),
 
           );
         },

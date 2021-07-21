@@ -232,29 +232,38 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future deleteAccount(String uid) async {
+    try{
+      String deleteDoc="";//for id to doc to be deleted
+      await FirebaseFirestore.instance.collection('users').doc(
+          uid).collection("Appointments").get().then((
+          QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((element) {
+          deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
+          FirebaseFirestore.instance.collection('users').doc(uid).collection("Appointments").doc(deleteDoc).delete();
 
-    String deleteDoc="";//for id to doc to be deleted
-    await FirebaseFirestore.instance.collection('users').doc(
-        uid).collection("Appointments").get().then((
-        QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((element) {
-        deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
-        FirebaseFirestore.instance.collection('users').doc(uid).collection("Appointments").doc(deleteDoc).delete();
-
+        });
       });
-    });
-    deleteDoc="";
-    //await FirebaseFirestore.instance.collection('users').doc(uid).delete();
-    await FirebaseFirestore.instance.collection('users').doc(
-        uid).collection("PatientList").get().then((
-        QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((element) {
-        deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
-        FirebaseFirestore.instance.collection('users').doc(uid).collection("PatientList").doc(deleteDoc).delete();
+      deleteDoc="";
+      //await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+      await FirebaseFirestore.instance.collection('users').doc(
+          uid).collection("PatientList").get().then((
+          QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((element) {
+          deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
+          FirebaseFirestore.instance.collection('users').doc(uid).collection("PatientList").doc(deleteDoc).delete();
 
+        });
       });
-    });
-    await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+      await FirebaseFirestore.instance.collection('users').doc(uid).delete();
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#15 Unable to perform operation. Please check your connection")));
+    }
+
+
   }
 
   Future createAlertDialogForDeleteAccount(BuildContext context) async {
@@ -273,7 +282,15 @@ class _SettingsPageState extends State<SettingsPage> {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text("Deleting Account"),
                   ));
-                  await _auth.signOut().then((value) => deleteAccount(uid));
+                  try{
+                    await _auth.signOut().then((value) => deleteAccount(uid));
+
+                  }
+                  catch(e){
+                    print(e);
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                        content: Text("#16 Unable to perform operation. Please check your connection")));
+                  }
 
 
                   Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) =>

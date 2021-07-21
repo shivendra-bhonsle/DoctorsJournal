@@ -99,7 +99,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (_formKey.currentState!
                           .validate()) {
                         displaySnackBar('Please wait...');
-                        await login();
+                        try{
+                          await login();
+                        }
+                        catch(e){
+                          print(e);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("#19 Unable to perform operation. Please check your connection")));
+                        }
                       }
                     }
                   },
@@ -250,7 +257,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             isResend = false;
                             isLoading = true;
                           });
-                          await login();
+                          try{
+                            await login();
+
+
+                          }
+                          catch(e){
+                            print(e);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("#18 Unable to perform operation. Please check your connection")));
+                          }
                         },
                         child: new Container(
                           padding: const EdgeInsets.symmetric(

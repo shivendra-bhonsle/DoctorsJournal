@@ -1,13 +1,22 @@
 import 'dart:io';
+import 'package:doctors_diary/navigationBar/pages/AboutUs.dart';
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Developers/Developers_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MenuBar extends StatelessWidget {
   const MenuBar({Key? key}) : super(key: key);
+  _launchURL(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +50,12 @@ class MenuBar extends StatelessWidget {
               onClicked: () => selectedItem(context, 3),
             ),
             SizedBox(height: 12.0,),
+            MenuItems(
+              text: 'Report a Bug',
+              icon: Icons.bug_report,
+              onClicked: () => _launchURL("https://forms.gle/aYBfukrhuuBTnWks8"),
+            ),
+            SizedBox(height: 12.0,),
             Divider(color: Colors.black,),
             SizedBox(height: 12.0,),
             MenuItems(
@@ -50,10 +65,17 @@ class MenuBar extends StatelessWidget {
             ),
             SizedBox(height: 12.0,),
             MenuItems(
+              text: 'About Us',
+              icon: Icons.info,
+              onClicked: () => selectedItem(context, 5),
+            ),
+            SizedBox(height: 12.0,),
+            MenuItems(
               text: 'Quit',
               icon: Icons.power_settings_new,
               onClicked: () => exit(0)
             ),
+
           ],
         ),
       ),
@@ -96,6 +118,11 @@ class MenuBar extends StatelessWidget {
       case 4:
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => Developers(),
+        ));
+        break;
+      case 5:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AboutUs(),
         ));
         break;
     }

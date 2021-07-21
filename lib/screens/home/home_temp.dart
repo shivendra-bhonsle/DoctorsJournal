@@ -23,20 +23,27 @@ class _HomeTempState extends State<HomeTemp> {
   bool isListEmpty=false;
 
   Future fetchAppointmentsToday() async {
-    //print(DateTime.now());
     String s=DateTime.now().toString().substring(0,11)+"00:00:00.000Z";
     print(s);
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").where('appoDate',isEqualTo:s).get().then((value) => {
+        value.docs.forEach((element) {
+          print(element.id);
+          setState(() {
+            appointmentToday.add(AppointmentToday(name: element.get('name'), time: element.get('appoTime'), mobile: element.get('mobile')));
 
-    await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").where('appoDate',isEqualTo:s).get().then((value) => {
-      value.docs.forEach((element) {
-        print(element.id);
-        setState(() {
-          appointmentToday.add(AppointmentToday(name: element.get('name'), time: element.get('appoTime'), mobile: element.get('mobile')));
+          });
 
-        });
+        })
+      });
 
-      })
-    });
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#20 Unable to perform operation. Please check your connection")));
+    }
+
 
 
   }
@@ -45,7 +52,6 @@ class _HomeTempState extends State<HomeTemp> {
   late Future _fetch;
   @override
   void initState() {
-    // TODO: implement initState
     appointmentToday=[];
     super.initState();
     _fetch=fetchAppointmentsToday();

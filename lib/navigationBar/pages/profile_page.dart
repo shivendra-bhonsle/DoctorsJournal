@@ -16,7 +16,6 @@ class _ProfileState extends State<Profile> {
   @override
   initState() {
     super.initState();
-    //setText();
 
 
   }
@@ -172,10 +171,18 @@ class _ProfileState extends State<Profile> {
 
    Future editName(String newName) async{
 
-     FirebaseFirestore.instance.collection('users').doc(
-         FirebaseAuth.instance.currentUser!.uid)..set(
-         {'name': newName},
-         SetOptions(merge: true));
+     try{
+       FirebaseFirestore.instance.collection('users').doc(
+           FirebaseAuth.instance.currentUser!.uid)..set(
+           {'name': newName},
+           SetOptions(merge: true));
+     }
+     catch(e){
+       print(e);
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+           content: Text("#5 Unable to perform operation. Please check your connection")));
+     }
+
 
    }
 

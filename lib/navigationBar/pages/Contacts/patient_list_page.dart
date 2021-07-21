@@ -23,7 +23,6 @@ class _PatientListState extends State<PatientList> {
   TextEditingController searchController=new TextEditingController(); //assigning a controller for search bar
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getPermissions();//to get permissions fro the user as so as app initialises
 
@@ -45,27 +44,25 @@ class _PatientListState extends State<PatientList> {
   }
   //List<AppContact?> _contacts=[];
   getAllContacts() async{
-    /*List colors = [
-      Colors.green,
-      Colors.indigo,
-      Colors.yellow,
-      Colors.orange
+    List colors = [
+      Colors.blue[900],
+      Colors.blue[700],
+      Colors.blue[500],
+     // Colors.blue[300]
     ];
-    int colorIndex = 0;*/
+    int colorIndex = 0;
 
-    // Contact cntc;
-    // cntc=(await ContactsService.openDeviceContactPicker()) as Contact;
-    // _contacts.add(new AppContact(info: cntc,));
     List<AppContact?> _contacts = (await ContactsService.getContacts()).map((contact){//to get contacts from main contact app and map each contact
-    /*Color baseColor = colors[colorIndex];
+      Color baseColor = colors[colorIndex];
     colorIndex++;
     if (colorIndex == colors.length) {
       colorIndex = 0;
-    }*/
+    }
+
       if( contact.givenName==null){
         return null;
       }
-      return new AppContact(info: contact,);
+      return new AppContact(info: contact,color: baseColor);
 
 
       //return a object appContact

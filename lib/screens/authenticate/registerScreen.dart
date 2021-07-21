@@ -1,5 +1,4 @@
 import 'package:doctors_diary/screens/home/home_temp.dart';
-import 'package:doctors_diary/services/database.dart';
 import 'package:doctors_diary/shared/Loading.dart';
 import 'package:doctors_diary/shared/constants.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,9 +7,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 
-// String nextAppo = 'DD/MM/YYYY';
-// String lastAppo = 'dd/mm/yyyy';
-// String description = 'lorem ipsum';
 
 
 
@@ -198,24 +194,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         {
                           if(user != null){
 
-                            //store registration details in firestore database
-                            /*await _firestore.collection('users')
-                                .doc(_auth.currentUser!.uid)
-                                .set({
-                              'name': nameController.text,
-                              'mobile': cellnumberController.text.trim(),
-                            },
-                                SetOptions(
-                                    merge: true)
-                            ).then((value) =>
-                            {
-                              //then move to authorised area
-                              setState(() {
-                                isLoading = false;
-                                isResend = false;
-                              })
-                            }
-                            )*/
+
                             if(isLoginScreen == false){
                               setUserData(),
                               print("Uid :" + _auth.currentUser!.uid),
@@ -299,37 +278,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
   //Commented for testing start
 
   Future setUserData() async {
-    await _firestore.collection('users')
-        .doc(_auth.currentUser!.uid)
-        .set({
-      'name': nameController.text,
-      'mobile': cellnumberController.text.trim(),
+    try{
+      await _firestore.collection('users')
+          .doc(_auth.currentUser!.uid)
+          .set({
+        'name': nameController.text,
+        'mobile': cellnumberController.text.trim(),
       },
-        SetOptions(
-            merge: true)
-    ).then((value) {
+          SetOptions(
+              merge: true)
+      ).then((value) {
 
-      //then move to authorised area
-      setState(() {
-        isLoading = false;
-        isResend = false;
+        //then move to authorised area
+        setState(() {
+          isLoading = false;
+          isResend = false;
+        });
       });
-    });
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#17 Unable to perform operation. Please check your connection")));
+    }
+
 
 
 
   }
 
-  // Future createSubcollectionForPatientList() async{
-  //   return  await _firestore.collection('users')
-  //       .doc(_auth.currentUser!.uid)
-  //       .collection('PatientList')
-  //       .add({
-  //     'nextAppo' : nextAppo,
-  //     'lastAppo' : lastAppo,
-  //     'description' : description
-  //   }    );
-  // }
 
   Future signUp() async {
     setState(() {
@@ -434,162 +412,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-//Commented for testing end
-
-
-
-
-
-/*void verify(var phoneNumber,{var isLoginScreen=false})async{
-
-    var verifyPhoneNumber = _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (phoneAuthCredential) {
-          _auth.signInWithCredential(phoneAuthCredential).then((user) async =>
-          {
-
-            if (user != null) //if user is not null
-              {
-                if(isLoginScreen==false){},
-                //store registration details in firestore database
-                await _firestore
-                    .collection('users')
-                    .doc(_auth.currentUser!.uid)
-                    .set({
-                  'name': nameController.text.trim(),
-                  'mobile': cellnumberController.text.trim()
-                }, SetOptions(
-                    merge: true)) //if user accidentally registers for 2nd time i will merge
-                    .then((value) =>
-                {
-                  //then move to authorised area
-                  setState(() {
-                    isLoading = false;
-                    isRegister = false;
-                    isOTPScreen = false;
-
-                    //navigate to is
-                    Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            HomeTemp(),
-                      ),
-                          (route) => false,
-                    );
-                  })
-                })
-                    .catchError((onError) =>
-                {
-                  debugPrint(
-                      'Error saving user to db.' + onError.toString())
-                })
-              }
-          }
-
-          );
-        },
-        //starts a verification process for given number and executes if number is verified
-        verificationFailed: (FirebaseAuthException error) {
-          debugPrint('Error Logging in: ' + error.message.toString());
-          setState(() {
-            isLoading = false;
-          });
-        },
-        codeSent: (verificationId,
-            [forResendingToken]) { //exceutes when firebase send the code
-          setState(() {
-            isLoading = false;
-            verificationCode =
-                verificationId; //storing the code d=sent i.e verificationId into verificationCode
-          });
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          setState(() {
-            isLoading = false;
-            verificationCode = verificationId;
-          });
-        },timeout: Duration(seconds: 60) //starts a verification process for given phone number
-    );
-    await verifyPhoneNumber;
-  }*/
-/*
-  Future login(TextEditingController numberController) async {
-    setState(() {
-      isLoading = true;
-    });
-
-    var phoneNumber = '+91' + numberController.text.trim();
-    //first we will check if a user with this cell number exists
-    var isValidUser = false;
-    var number = numberController.text.trim();
-
-    await _firestore
-        .collection('users')
-        .where('mobile', isEqualTo: number)
-        .get()
-        .then((result) {
-      if (result.docs.length > 0) {
-        isValidUser = true;
-      }
-    });
-    if(isValidUser){
-      //ok, we have a valid user, now lets do otp verification
-      var verifyPhoneNumber = _auth.verifyPhoneNumber(
-        phoneNumber: phoneNumber,
-        verificationCompleted: (phoneAuthCredential) {
-          //auto code complete (not manually)
-          _auth.signInWithCredential(phoneAuthCredential).then((user) async => {
-            if (user != null)
-              {
-                //redirect
-                setState(() {
-                  isLoading = false;
-                  isOTPScreen = false;
-                }),
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (BuildContext context) => HomeTemp(),
-                  ),
-                      (route) => false,
-                )
-              }
-          });
-        },
-        verificationFailed: (FirebaseAuthException error) {
-          displaySnackBar('Validation error, please try again later');
-          setState(() {
-            isLoading = false;
-          });
-        },
-        codeSent: (verificationId, [forceResendingToken]) {
-          setState(() {
-            isLoading = false;
-            verificationCode = verificationId;
-            isOTPScreen = true;
-          });
-        },
-        codeAutoRetrievalTimeout: (String verificationId) {
-          setState(() {
-            isLoading = false;
-            verificationCode = verificationId;
-          });
-        },
-        timeout: Duration(seconds: 60),
-      );
-      await verifyPhoneNumber;
-    } else {
-      //non valid user
-      setState(() {
-        isLoading = false;
-      });
-      displaySnackBar('Number not found, please sign up first');
-
-
-    }
-
-  }*/
 
 
 }

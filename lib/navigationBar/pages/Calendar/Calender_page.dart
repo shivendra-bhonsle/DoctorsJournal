@@ -87,41 +87,50 @@ class _CalendarState extends State<Calendar> {
   }
 
   Future fetchAllAppointments() async {
+    try{
+      //fetch all docs in appointment section
+      await FirebaseFirestore.instance.collection('users').doc(
+          _auth.currentUser!.uid).collection("Appointments").get().then((
+          QuerySnapshot querySnapshot) {
+        querySnapshot.docs.forEach((element) {
+          //for each doc grab the date and time and convert it to DateTime and TimeOfDay resp from string
+          String s=element.get('appoTime');
+          DateTime dt=DateTime.parse(element.get('appoDate'));
+          TimeOfDay _startTime = TimeOfDay(hour:int.parse(s.split(":")[0]),minute: int.parse(s.split(":")[1]));
 
-    //fetch all docs in appointment section
-    await FirebaseFirestore.instance.collection('users').doc(
-        _auth.currentUser!.uid).collection("Appointments").get().then((
-        QuerySnapshot querySnapshot) {
-      querySnapshot.docs.forEach((element) {
-        //for each doc grab the date and time and convert it to DateTime and TimeOfDay resp from string
-        String s=element.get('appoTime');
-        DateTime dt=DateTime.parse(element.get('appoDate'));
-        TimeOfDay _startTime = TimeOfDay(hour:int.parse(s.split(":")[0]),minute: int.parse(s.split(":")[1]));
-
-        //add those date in selectedEvents array and pass the name and time as Event list inside it
-        if(selectedEvents[dt]!=null){
-          setState(() {
-            selectedEvents[dt]!.add(Event(
-              title: element.get('name'),
-              time: _startTime,
-            ));
-          });
-
-        }else{
-          setState(() {
-            selectedEvents[dt] = [
-              Event(
+          //add those date in selectedEvents array and pass the name and time as Event list inside it
+          if(selectedEvents[dt]!=null){
+            setState(() {
+              selectedEvents[dt]!.add(Event(
                 title: element.get('name'),
                 time: _startTime,
-              )
-            ];
-          });
+              ));
+            });
 
-        }
+          }else{
+            setState(() {
+              selectedEvents[dt] = [
+                Event(
+                  title: element.get('name'),
+                  time: _startTime,
+                )
+              ];
+            });
+
+          }
 
 
+        });
       });
-    });
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#6 Unable to perform operation. Please check your connection")));
+    }
+
+
   }
 
   late Future _future;
@@ -166,74 +175,40 @@ class _CalendarState extends State<Calendar> {
 
   //Add Appointments
   Future<void> addAppointments() async {
-
-    /*showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text("Add Appointments"),
-          content: TextFormField(controller: _eventController,),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text("Cancel")
-            ),
-            TextButton(
-                onPressed: () async {
-                  if(_eventController.text.isEmpty){
-                  }else{
-                    await selectTime(context);
-                    if(selectedEvents[_selectedDay]!=null){
-                      selectedEvents[_selectedDay]!.add((Event(
-                        title: _eventController.text,
-                        time: picked,
-                      )
-                      ));
-                    }else{
-                      selectedEvents[_selectedDay] = [
-                        Event(
-                          title: _eventController.text,
-                          time: picked,
-                        )
-                      ];
-                    }
-                  }
-                  print(picked);
-                  Navigator.pop(context);
-                  _eventController.clear();
-                  setState(() {});
-                  return;
-                },
-                child: Text("Ok")
-            ),
-          ],
-        )
-    );*/
-    await selectTime(context);
-    if(selectedEvents[_selectedDay]!=null){
-      setState(() {
-        selectedEvents[_selectedDay]!.add(Event(
-          title: widget.name,
-          time: picked,
-        )
-        );
-      });
-
-    }else{
-      setState(() {
-        selectedEvents[_selectedDay] = [
-          Event(
+    try{
+      await selectTime(context);
+      if(selectedEvents[_selectedDay]!=null){
+        setState(() {
+          selectedEvents[_selectedDay]!.add(Event(
             title: widget.name,
             time: picked,
           )
-        ];
-      });
+          );
+        });
+
+      }else{
+        setState(() {
+          selectedEvents[_selectedDay] = [
+            Event(
+              title: widget.name,
+              time: picked,
+            )
+          ];
+        });
+
+      }
+
+      print(selectedEvents);
+
 
     }
-    // SettingsPage().scheduleNotification(widget.name, _selectedDay, picked);
-    //TODO set nextAppo
-    //await setNextAppo(/*_selectedDay.toString()*/);
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#7 Unable to perform operation. Please check your connection")));
+    }
 
-    print(selectedEvents);
+
 
 
 }
@@ -256,28 +231,36 @@ class _CalendarState extends State<Calendar> {
                   IconButton(
                     alignment: Alignment.centerRight,
                     onPressed: ()async{
-                      String deleteDoc="";//for id to doc to be deleted
-                       await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").
-                      where('name', isEqualTo:s).where('appoTime',isEqualTo: t.toString().substring(10,12)+":"+t.toString().substring(13,15)).get().then((querySnapshot) => {
-                       querySnapshot.docs.forEach((DocumentSnapshot element) {
-                       deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
-                       //print(patientId);
-                       })
-                       });
+                      try{
+                        String deleteDoc="";//for id to doc to be deleted
+                        await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").
+                        where('name', isEqualTo:s).where('appoTime',isEqualTo: t.toString().substring(10,12)+":"+t.toString().substring(13,15)).get().then((querySnapshot) => {
+                          querySnapshot.docs.forEach((DocumentSnapshot element) {
+                            deleteDoc = element.id.toString(); //get the id of the doc by searching by time and name
+                            //print(patientId);
+                          })
+                        });
 
-                       //delete the doc by passing its id
-                      await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete()
-                          .then((value) async
-                      {
-                      await setNextAppoAfterDelete(s);
-                      });
+                        //delete the doc by passing its id
+                        await FirebaseFirestore.instance.collection('users').doc(_auth.currentUser!.uid).collection("Appointments").doc(deleteDoc).delete()
+                            .then((value) async
+                        {
+                          await setNextAppoAfterDelete(s);
+                        });
 
-                      setState(() {
-                        getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
+                        setState(() {
+                          getEventsfromDay(_selectedDay).removeWhere((element) => element.title == s && element.time==t );
 
-                      });
+                        });
 
-                      //await setNextAppo();
+                      }
+                      catch(e){
+                        print(e);
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text("#8 Unable to perform operation. Please check your connection")));
+                      }
+
+
                       },
                     icon: Icon(Icons.delete),
                   ),
@@ -346,18 +329,26 @@ class _CalendarState extends State<Calendar> {
                       child: FloatingActionButton.extended(
 
                         onPressed: () async {
-                          await addAppointments();
-                          //TODO create doc in database
-                          String uid = _auth.currentUser!.uid;
-                          await DatabaseService(uid: uid).createSubcollectionForAppointments(
-                            mobile:widget.mobile,
-                              pid:widget.patID,
-                              name:widget.name,
-                              appoDate:_selectedDay.toString(),
-                              appoTime:(picked.toString().substring(10,12)+":"+picked.toString().substring(13,15))).then((value) =>
-                          {
-                          setNextAppo()
-                          });
+                          try{
+                            await addAppointments();
+                            String uid = _auth.currentUser!.uid;
+                            await DatabaseService(uid: uid).createSubcollectionForAppointments(
+                                mobile:widget.mobile,
+                                pid:widget.patID,
+                                name:widget.name,
+                                appoDate:_selectedDay.toString(),
+                                appoTime:(picked.toString().substring(10,12)+":"+picked.toString().substring(13,15))).then((value) =>
+                            {
+                              setNextAppo()
+                            });
+
+                          }
+                          catch(e){
+                            print(e);
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("#9 Unable to perform operation. Please check your connection")));
+                          }
+
 
                           },
                         label: Text("Add Appointments"),
@@ -392,28 +383,37 @@ class _CalendarState extends State<Calendar> {
   Future setNextAppo() async {
 
     DateTime minDt = DateTime.parse("2100-01-01 00:00:00Z");
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+          .where('name',isEqualTo: widget.name)/*.orderBy('appoDate')*/
+          .get().then((value) => {
+        value.docs.forEach((element) async {
+          DateTime Dt = DateTime.parse(element.data()['appoDate']);
+          if(Dt.isBefore(minDt)){
+            minDt = Dt;
+          }
 
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
-       .where('name',isEqualTo: widget.name)/*.orderBy('appoDate')*/
-        .get().then((value) => {
-      value.docs.forEach((element) async {
-        DateTime Dt = DateTime.parse(element.data()['appoDate']);
-        if(Dt.isBefore(minDt)){
-          minDt = Dt;
         }
 
-      }
-
-      ),
+        ),
         //print(_nextAppo),
         print("before setting nextAppo")
-    }).then((value) async {
-          await FirebaseFirestore.instance.collection('users').doc(
-          FirebaseAuth.instance.currentUser!.uid).
-          collection('PatientList').doc(widget.patID).set(
-          {'nextAppo': minDt.toString()},
-          SetOptions(merge: true));
-    });
+      }).then((value) async {
+        await FirebaseFirestore.instance.collection('users').doc(
+            FirebaseAuth.instance.currentUser!.uid).
+        collection('PatientList').doc(widget.patID).set(
+            {'nextAppo': minDt.toString()},
+            SetOptions(merge: true));
+      });
+
+
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#10 Unable to perform operation. Please check your connection")));
+    }
+
 
   }
 
@@ -425,38 +425,48 @@ class _CalendarState extends State<Calendar> {
     DateTime minDt = DateTime.parse("2100-01-01 00:00:00Z");
 
     //get patDoc from Patientlist
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("PatientList").
-    where('name', isEqualTo: name).get().then((value) => {
-      value.docs.forEach((element) {
-        patID_ofPat_toBeDeleted = element.id.toString();
-      })
-    });
-    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
-        .where('name',isEqualTo: name)
-        .get().then((value) => {
-      value.docs.forEach((element) async {
+    try{
+      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("PatientList").
+      where('name', isEqualTo: name).get().then((value) => {
+        value.docs.forEach((element) {
+          patID_ofPat_toBeDeleted = element.id.toString();
+        })
+      });
+      await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+          .where('name',isEqualTo: name)
+          .get().then((value) => {
+        value.docs.forEach((element) async {
 
-        DateTime Dt = DateTime.parse(element.data()['appoDate']);
-        if(Dt.isBefore(minDt)){
-          minDt = Dt;
+          DateTime Dt = DateTime.parse(element.data()['appoDate']);
+          if(Dt.isBefore(minDt)){
+            minDt = Dt;
+          }
+        }),
+        //print(_nextAppo),
+        print("before setting nextAppo"),
+
+        if(minDt == DateTime.parse("2100-01-01 00:00:00Z")){
+          nextAppoStatus = "Not Assigned"
+        }else{
+          nextAppoStatus = minDt.toString()
         }
-      }),
-      //print(_nextAppo),
-      print("before setting nextAppo"),
 
-      if(minDt == DateTime.parse("2100-01-01 00:00:00Z")){
-        nextAppoStatus = "Not Assigned"
-      }else{
-        nextAppoStatus = minDt.toString()
-      }
+      }).then((value) async {
+        await FirebaseFirestore.instance.collection('users').doc(
+            FirebaseAuth.instance.currentUser!.uid).
+        collection('PatientList').doc(patID_ofPat_toBeDeleted).set(
+            {'nextAppo': nextAppoStatus},
+            SetOptions(merge: true));
+      });
 
-    }).then((value) async {
-      await FirebaseFirestore.instance.collection('users').doc(
-          FirebaseAuth.instance.currentUser!.uid).
-      collection('PatientList').doc(patID_ofPat_toBeDeleted).set(
-          {'nextAppo': nextAppoStatus},
-          SetOptions(merge: true));
-    });
+    }
+    catch(e){
+      print(e);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text("#11 Unable to perform operation. Please check your connection")));
+    }
+
+
   }
 
 

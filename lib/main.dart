@@ -1,7 +1,5 @@
-import 'package:doctors_diary/screens/about_page.dart';
-import 'package:doctors_diary/screens/home/home_temp.dart';
+
 import 'package:doctors_diary/screens/wrapper.dart';
-//import 'package:doctors_diary/shared/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:splashscreen/splashscreen.dart';

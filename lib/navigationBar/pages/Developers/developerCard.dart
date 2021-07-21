@@ -85,7 +85,6 @@ class DeveloperCard extends StatelessWidget {
     );
   }
   _launchURL(String url) async {
-    // const url = 'https://www.freeprivacypolicy.com/live/5f912cf6-262a-4f14-8f42-8fdbfd17c050';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -98,9 +97,7 @@ class DeveloperCard extends StatelessWidget {
       to: [email],
 
     );
-    // Convert the Mailto instance into a string.
-    // Use either Dart's string interpolation
-    // or the toString() method.
+
     await launch('$mailtoLink');
   }
 }

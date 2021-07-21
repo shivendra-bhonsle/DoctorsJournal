@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 
-String nextAppo = 'DD/MM/YYYY';
-String lastAppo = 'dd/mm/yyyy';
+String nextAppo = 'Not assigned';
+String lastAppo = 'Not assigned';
 String description = 'lorem ipsum';
 
 
@@ -12,18 +12,17 @@ class DatabaseService{
 
 
   final String uid ;
-  //MyUser user = FirebaseAuth.instance.currentUser;
 
   DatabaseService({required this.uid});
 
 
-  // final CollectionReference patientList = FirebaseFirestore.instance.collection('users')
-  // .doc(user.uid).collection('patientList');
+
 
   Future createSubcollectionForPatientList(String name, String phoneno,          //if subcollection exists, only new doc is created
       String age,
       String nextAppo, String lastAppo,
       String description) async{
+
     return  await FirebaseFirestore.instance.collection('users')
         .doc(uid)
         .collection('PatientList').add({
@@ -160,53 +159,6 @@ class DatabaseService{
     });
   }
 
-  //get snapshot of PatientList
-  // fetchAllPatients() async {
-  //   bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
-  //   return await FirebaseFirestore.instance.collection('users').get().then((QuerySnapshot querySnapshot){
-  //     querySnapshot.docs.forEach((element) {
-  //       if(doneOnce){
-  //         doneOnce = false;
-  //         FirebaseFirestore.instance.collection('users')
-  //             .doc(uid).collection('PatientList')
-  //             .get().then((querySnapshot){
-  //           querySnapshot.docs.forEach((element) {
-  //             //element.get('name');
-  //             print(element.id);
-  //           });
-  //         });
-  //       }
-  //     });
-  //   });
-  // }
 
-
-
-  //get snapshot of PatientList
-  // fetchAllAppointments() async {
-  //   Map<DateTime?, List<Event>> selectedEvents = {};
-  //   List<DateTime> dates=[];
-  //   bool doneOnce = true;             //just so that the nest loop doesn't print the result repeatedly
-  //    await FirebaseFirestore.instance.collection('users').doc(uid).collection("Appointments").get().then((QuerySnapshot querySnapshot){
-  //     querySnapshot.docs.forEach((element) {
-  //       /*if(doneOnce){
-  //         doneOnce = false;
-  //         FirebaseFirestore.instance.collection('users')
-  //             .doc(uid).collection('PatientList')
-  //             .get().then((querySnapshot){
-  //           querySnapshot.docs.forEach((element) {
-  //             print(element.data());
-  //           });
-  //         });
-  //       }*/
-  //       // DateTime date=;
-  //       // Event obj=Event(title: element.get('title'), time: element.get('appotime'));
-  //       // Map<DateTime?, List<Event>> event={(Map)date,<obj>};
-  //      selectedEvents.addEntries(element.get('appoDate')) ;
-  //     });
-  //   });
-  //    return dates;
-  //
-  // }
 
   }

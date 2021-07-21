@@ -1,15 +1,10 @@
 import 'dart:io';
-
-
-import 'package:doctors_diary/services/database.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Calendar/Calender_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Developers/Developers_page.dart';
-import 'package:flutter/services.dart';
 
 class MenuBar extends StatelessWidget {
   const MenuBar({Key? key}) : super(key: key);
@@ -95,7 +90,7 @@ class MenuBar extends StatelessWidget {
         break;
       case 3:
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => Settings(),
+          builder: (context) => SettingsPage(),
         ));
         break;
       case 4:

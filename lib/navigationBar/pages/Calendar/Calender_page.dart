@@ -4,6 +4,7 @@ import 'package:doctors_diary/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -71,14 +72,20 @@ class _CalendarState extends State<Calendar> {
   //To select the time of appointment
   Future<Null> selectTime(BuildContext context) async {
     await showTimePicker(
-        context: context,
-        initialTime: _time,
+      context: context,
+      initialTime: _time,
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );},
     ).then((value) => {
-       setState((){
-         picked = value!;
-       })
+      setState((){
+        picked = value!;
+      }),
     });
   }
+
   Future fetchAllAppointments() async {
 
     //fetch all docs in appointment section
@@ -222,6 +229,7 @@ class _CalendarState extends State<Calendar> {
       });
 
     }
+    // SettingsPage().scheduleNotification(widget.name, _selectedDay, picked);
     //TODO set nextAppo
     //await setNextAppo(/*_selectedDay.toString()*/);
 
@@ -272,7 +280,7 @@ class _CalendarState extends State<Calendar> {
                       //await setNextAppo();
                       },
                     icon: Icon(Icons.delete),
-                  )
+                  ),
                 ],
               ),
             ],

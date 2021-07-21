@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctors_diary/navigationBar/pages/Settings_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:doctors_diary/services/database.dart';
 
 
@@ -21,6 +24,14 @@ class Appointment extends StatefulWidget {
 }
 
 class _AppointmentState extends State<Appointment> {
+
+  @override
+  void initState() {
+    super.initState();
+    tz.initializeTimeZones();
+    tz.setLocalLocation(tz.getLocation("Asia/Kolkata"));
+  }
+
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
@@ -28,6 +39,8 @@ class _AppointmentState extends State<Appointment> {
       shrinkWrap: true,
       itemBuilder: (context,index){
         AppointmentToday today=widget.appointmentsToday[index];
+        SettingsPage().scheduleNotification(today.name, today.time, tz.local);
+
 
         return Card(
           margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
@@ -141,6 +154,7 @@ class _AppointmentState extends State<Appointment> {
 
                             //fetch and set nextAppo to coming appointment
                             await setNextAppointment(today.name, patDoc);
+                            SettingsPage().cancelScheduledNotification(today.time);
 
 
                           },
@@ -187,6 +201,7 @@ class _AppointmentState extends State<Appointment> {
 
                         //to fetch and set nextAppo to earliest coming appointment
                         await setNextAppointment(today.name, patDoc);
+                        SettingsPage().cancelScheduledNotification(today.time);
 
                       } ,
                         child: Text(

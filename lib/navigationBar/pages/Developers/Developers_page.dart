@@ -60,7 +60,7 @@ class _DevelopersState extends State<Developers> {
       backgroundColor: Colors.grey[200],
         appBar: AppBar(
           title: Text('Developers',
-            style: TextStyle(fontFamily: 'Raleway', fontSize: 30.0,),),
+            style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
 
           centerTitle: true,
           backgroundColor: Colors.blue[900],

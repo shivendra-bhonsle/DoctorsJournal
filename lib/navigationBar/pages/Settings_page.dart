@@ -10,7 +10,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class SettingsPage extends StatefulWidget {
@@ -26,14 +27,37 @@ final List<bool> isSelected = [false, true];
 
 class _SettingsPageState extends State<SettingsPage> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  static int notiTime = 30;
+   int notiTime=30;
   final List<int> list_items = <int>[5, 10, 30, 60];
 
+  setNotificationTime() async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    sharedPreferences.setInt("notificationTime", notiTime);
+
+  }
+
+   getNotificationTime () async{
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    setState(() {
+      notiTime=sharedPreferences.getInt("notificationTime")??30;
+
+    });
+     //return notiTime;
+  }
+  void setTime()async {
+    setState(() async {
+      notiTime=await getNotificationTime();
+
+    });
+  }
 
   @override
   void initState() {
     super.initState();
-    var androidInitialize = new AndroidInitializationSettings("diary");
+    //setTime();
+    getNotificationTime();
+    print("init called");
+    var androidInitialize = new AndroidInitializationSettings("calendar");
     var iOSInitialize = new IOSInitializationSettings();
     final initializationsSettings = new InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
@@ -44,7 +68,12 @@ class _SettingsPageState extends State<SettingsPage> {
     tz.setLocalLocation(tz.getLocation("America/Detroit"));
   }
 
-  void showNotificationCard(String name, String time, tz.Location local){
+  Future<void> showNotificationCard(String name, String time, tz.Location local) async {
+    //print("while setting "+notiTime.toString());
+    //getNotificationTime();
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    notiTime=sharedPreferences.getInt("notificationTime")??30;
+    print("while setting "+notiTime.toString());
     String s = time;
     TimeOfDay _startTime = TimeOfDay(hour:int.parse(s.split(":")[0]),minute: int.parse(s.split(":")[1]));
     print(_startTime);
@@ -80,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationchannelID,
         name,
-        "you have appointment at "+time.toString().substring(10,15),
+        "you have appointment at "+ DateFormat("h:mma").format(convertFormat(time.toString().substring(10,15))),
         tz.TZDateTime.from(appointmentTime, local).subtract(Duration(minutes: notiTime)),
         generalNotificationDetails,
         androidAllowWhileIdle: true,
@@ -107,6 +136,14 @@ class _SettingsPageState extends State<SettingsPage> {
     await flutterLocalNotificationsPlugin.cancelAll();
   }
 
+  DateTime convertFormat(String time24){
+    DateTime dt=DateTime.now();
+    String time=dt.toString().substring(0,10)+" "+time24;
+    dt=DateTime.parse(time);
+    return dt;
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -119,112 +156,116 @@ class _SettingsPageState extends State<SettingsPage> {
         child: Scaffold(
           backgroundColor: Colors.lightBlue[50],
           appBar: AppBar(
-            title: Text('Settings'),
+            title: Text('Settings',style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
             centerTitle: true,
-            backgroundColor: Colors.blue[600],
+            backgroundColor: Colors.blue[900],
           ),
           body: Container(
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.all(12),
-            child: Column(
-              children: <Widget>[
-                Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)
-                  ),
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("NOTIFICATIONS",
-                          style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.w800,),
+                  margin: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(12),
+                  child: Column(
+                    children: <Widget>[
+                      Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)
                         ),
-                        SizedBox(height: 20,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Reminder before", style: GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.w800,),),
-                            DropdownButton(
-                                value: notiTime,
-                                items: list_items.map((int items) {
-                                  return DropdownMenuItem(
-                                    child: Text("$items minutes"),
-                                  value: items,
-                                  );
-                                }).toList(),
-                              onChanged: (int? value){
-                                  cancelNotification();
-                                  setState(() {
-                                    notiTime = value!;
-                                  });
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("NOTIFICATIONS",
+                                style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.w800,),
+                              ),
+                              SizedBox(height: 20,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Reminder before", style: GoogleFonts.roboto(fontSize: 18, fontWeight: FontWeight.w800,),),
+                                  DropdownButton(
+                                    value: notiTime,
+                                    items: list_items.map((int items) {
+                                      return DropdownMenuItem(
+                                        child: Text("$items minutes"),
+                                        value: items,
+                                      );
+                                    }).toList(),
+                                    onChanged: (int? value){
+                                      cancelNotification();
 
-                Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5)
-                  ),
-                  child: Container(
-                    width: 500,
-                    height: 180,
-                    padding: EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("ACCOUNT",
-                          style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.w800,),
-                        ),
-                        SizedBox(height: 4,),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text("Delete Account", style: GoogleFonts.roboto(fontSize: 18,  fontStyle: FontStyle.italic,)),
-                            //SizedBox(width: 130,),
-                            //Text("|", style: GoogleFonts.roboto(fontSize: 40, fontWeight: FontWeight.w200)),
-                            //SizedBox(width: 10,),
-                            IconButton(
-                                icon: Icon(Icons.delete),
-                                splashRadius: 25,
-                                splashColor: Colors.red[200],
-                                onPressed: ()  async{
-                                  await createAlertDialogForDeleteAccount(context);
-                                }
-                                )
-                          ],
-                        ),
+                                      setState(() {
+                                        notiTime = value!;
 
-                        Divider(thickness: 1, height: 20, color: Colors.black,),
-                        Align(
-                          alignment: Alignment.bottomCenter,
-                          child: Container(
-                            height: 50,
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              autofocus: false,
-                              clipBehavior: Clip.none,
-
-                              onPressed: (){
-                                Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
-                              },
-                              child: Text("Go to Profile"),
-
-                            ),
+                                        setNotificationTime();
+                                      });
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+
+                      Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(5)
+                        ),
+                        child: Container(
+                          width: 500,
+                          height: 180,
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("ACCOUNT",
+                                style: GoogleFonts.roboto(fontSize: 15, fontWeight: FontWeight.w800,),
+                              ),
+                              SizedBox(height: 4,),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text("Delete Account", style: GoogleFonts.roboto(fontSize: 18,  fontStyle: FontStyle.italic,)),
+                                  //SizedBox(width: 130,),
+                                  //Text("|", style: GoogleFonts.roboto(fontSize: 40, fontWeight: FontWeight.w200)),
+                                  //SizedBox(width: 10,),
+                                  IconButton(
+                                      icon: Icon(Icons.delete),
+                                      splashRadius: 25,
+                                      splashColor: Colors.red[200],
+                                      onPressed: ()  async{
+                                        await createAlertDialogForDeleteAccount(context);
+                                      }
+                                  )
+                                ],
+                              ),
+
+                              Divider(thickness: 1, height: 20, color: Colors.black,),
+                              Align(
+                                alignment: Alignment.bottomCenter,
+                                child: Container(
+                                  height: 50,
+                                  width: double.infinity,
+                                  child: ElevatedButton(
+                                    autofocus: false,
+                                    clipBehavior: Clip.none,
+
+                                    onPressed: (){
+                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
+                                    },
+                                    child: Text("Go to Profile"),
+
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
 
         ),
       ),

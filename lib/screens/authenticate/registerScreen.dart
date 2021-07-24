@@ -59,8 +59,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final node = FocusScope.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Doctor's Diary"),
-        backgroundColor: Colors.indigo[900],
+        title: Text("Doctor's Journal",style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
+        backgroundColor: Colors.blue[900],
 
       ),
       body: Container(
@@ -137,8 +138,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Doctor's Diary"),
-        backgroundColor: Colors.indigo[900],
+        title: Text("Doctor's Journal",style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
+        backgroundColor: Colors.blue[900],
 
       ),
       body: Container(

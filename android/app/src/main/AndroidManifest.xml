@@ -1,8 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.doctors_diary">
    <application
-        android:label="doctors_diary"
-        android:icon="@mipmap/ic_launcher">
+        android:label="Doctor's Journal"
+        android:icon="@mipmap/launcher_icon">
        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
            <intent-filter>
                <action android:name="android.intent.action.BOOT_COMPLETED"></action>

@@ -64,8 +64,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Text("Doctor's Diary"),
-        backgroundColor: Colors.indigo[900],
+        title: Text("Doctor's Journal",style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
+        backgroundColor: Colors.blue[900],
 
       ),
       body: Container(
@@ -155,8 +156,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       key: _scaffoldKey,
       appBar:AppBar(
-        title: Text("Doctor's Diary"),
-        backgroundColor: Colors.indigo[900],
+        title: Text("Doctor's Journal",style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
+        backgroundColor: Colors.blue[900],
 
       ) ,
       body: Container(

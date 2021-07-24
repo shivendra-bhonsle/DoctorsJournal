@@ -123,9 +123,10 @@ class _PatientListState extends State<PatientList> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Patient List'),
+        title: Text('Contact List',style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
         centerTitle: true,
-        backgroundColor: Colors.indigo[900],
+        backgroundColor: Colors.blue[900],
       ),
       floatingActionButton: FloatingActionButton(//to add a new contact
         onPressed: () async{

@@ -14,6 +14,38 @@
       },
       "oauth_client": [
         {
+          "client_id": "69835557982-38lhfldn454mgcs9pojp1leqj8kdqgsj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.doctors_diary",
+            "certificate_hash": "a8dc606f074de13c3946c8faab8a9d804721c5ae"
+          }
+        },
+        {
+          "client_id": "69835557982-45kr31q4fgvkmjhevjke6l4u6s8hd18o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.doctors_diary",
+            "certificate_hash": "73faf49cfa609bbd59f5c32f5ec1e05cc48cbfc5"
+          }
+        },
+        {
+          "client_id": "69835557982-hcceb1ojd2hmlq9pr25bq71rbbt281b2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.doctors_diary",
+            "certificate_hash": "96fe47bc88e945af64b21c18650260300243b8ea"
+          }
+        },
+        {
+          "client_id": "69835557982-hinrkicaaicmqgqm5vo13d39udaa045f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.project.doctors_diary",
+            "certificate_hash": "5ccdde871c0644a37b4b5ac14869a21d22508dc1"
+          }
+        },
+        {
           "client_id": "69835557982-l8iu4d0ruvr2sl6be2gad9525ft1dk15.apps.googleusercontent.com",
           "client_type": 3
         }

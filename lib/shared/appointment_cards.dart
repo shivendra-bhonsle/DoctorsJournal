@@ -52,7 +52,8 @@ class _AppointmentState extends State<Appointment> {
 
 
         return Card(
-          margin: EdgeInsets.fromLTRB(20, 20, 20, 20),
+          color: Colors.white,
+          margin: EdgeInsets.fromLTRB(20, 10, 20, 10),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(

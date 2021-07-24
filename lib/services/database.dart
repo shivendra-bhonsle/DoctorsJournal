@@ -104,7 +104,7 @@ class DatabaseService{
 
   //TODO get nextAppo from database
   Future<String?> getPatientNextAppo(String pid) async {
-    String _nextAppo = "not assigned";
+    String _nextAppo = "Not assigned";
     String uid = _auth.currentUser!.uid;
     await FirebaseFirestore.instance.collection('users').doc(uid)
         .collection('PatientList') .doc(pid)
@@ -122,7 +122,7 @@ class DatabaseService{
 
   //TODO get lastAppo from database
   Future<String?> getPatientLastAppo(String pid)async{
-    String _lastappo = "not assigned";
+    String _lastappo = "Not assigned";
     String uid = _auth.currentUser!.uid;
     await FirebaseFirestore.instance.collection('users').doc(uid)
         .collection('PatientList') .doc(pid)
@@ -140,20 +140,40 @@ class DatabaseService{
 
   Future toDeletePastAppointments() async{
     //DateTime today = DateTime.now();
+    String name="";
+    String patId="";
     DateTime temp = DateTime.now();
     String hole = DateTime.now().toString().substring(0,10)+" 00:00:00Z";
     DateTime today = DateTime.parse(hole);
     String appoID = " ";
+    String nextAppo_fetched="";
     await FirebaseFirestore.instance.collection('users').doc(uid)
         .collection('Appointments').get().then((value) {
           value.docs.forEach((element)  async {
             print("today = $today");
+            patId=element.data()['pid'];
+            name=element.data()['name'].toString();
             temp = DateTime.parse(element.data()['appoDate'].toString());
             appoID = element.id.toString();
             if(temp.isBefore(today)){
               print("***today = $today");
               await FirebaseFirestore.instance.collection('users').doc(uid)
-                  .collection('Appointments').doc(appoID).delete();
+                  .collection('Appointments').doc(appoID).delete().then((value) async => {
+
+              await DatabaseService(uid: FirebaseAuth.instance.currentUser!.uid)
+                  .getPatientNextAppo(patId)
+                  .then((value) => {
+              nextAppo_fetched = value.toString()
+              }),
+
+                  //setting lastAppo to nextAppo
+                  await FirebaseFirestore.instance.collection('users').doc(
+                  FirebaseAuth.instance.currentUser!.uid).
+              collection('PatientList').doc(patId).set(
+                  {'lastAppo': nextAppo_fetched},
+                  SetOptions(merge: true)),
+                setNextAppoAfterDelete(name),
+              });
             }
           });
     });
@@ -162,3 +182,50 @@ class DatabaseService{
 
 
   }
+
+Future setNextAppoAfterDelete(String name) async{
+  //to set nextAppo in "Patientlist->patient doc" to 'not assigned'
+  String patID_ofPat_toBeDeleted = " ";
+  String nextAppoStatus = "";
+  DateTime minDt = DateTime.parse("2100-01-01 00:00:00Z");
+
+  //get patDoc from Patientlist
+  
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("PatientList").
+    where('name', isEqualTo: name).get().then((value) => {
+      value.docs.forEach((element) {
+        patID_ofPat_toBeDeleted = element.id.toString();
+      })
+    });
+    await FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("Appointments")
+        .where('name',isEqualTo: name)
+        .get().then((value) => {
+      value.docs.forEach((element) async {
+
+        DateTime Dt = DateTime.parse(element.data()['appoDate']);
+        if(Dt.isBefore(minDt)){
+          minDt = Dt;
+        }
+      }),
+      //print(_nextAppo),
+      print("before setting nextAppo"),
+
+      if(minDt == DateTime.parse("2100-01-01 00:00:00Z")){
+        nextAppoStatus = "Not Assigned"
+      }else{
+        nextAppoStatus = minDt.toString()
+      }
+
+    }).then((value) async {
+      await FirebaseFirestore.instance.collection('users').doc(
+          FirebaseAuth.instance.currentUser!.uid).
+      collection('PatientList').doc(patID_ofPat_toBeDeleted).set(
+          {'nextAppo': nextAppoStatus},
+          SetOptions(merge: true));
+    });
+
+  
+  
+
+
+}

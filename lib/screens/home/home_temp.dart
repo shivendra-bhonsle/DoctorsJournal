@@ -61,36 +61,43 @@ class _HomeTempState extends State<HomeTemp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.lightBlue[50],
       drawer: MenuBar(),
       appBar: AppBar(
-        title: Text("Appointments Today"),
+        title: Text("Appointments Today",style: TextStyle(fontFamily: 'Raleway', ),),
+
         centerTitle: true,
-        backgroundColor: Colors.indigo[900],
+        backgroundColor: Colors.blue[900],
         actions: <Widget>[
-          Container(
-            padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-            child: ElevatedButton(onPressed:
-                      () async {
-                        await _auth.signOut();
-                        //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
-                        Navigator.pushReplacement(context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => LoginScreen()),);
-
-                },
-
-             child:
-                 Text("Logout",style: TextStyle(fontWeight: FontWeight.bold)),
-
-              style: ElevatedButton.styleFrom(primary: Colors.red[900],padding: EdgeInsets.all(10)),
-            ),
-          ),
+          // Container(
+          //
+          //   padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+          //   child: ElevatedButton(onPressed:
+          //             () async {
+          //               await _auth.signOut();
+          //               //Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+          //               Navigator.pushReplacement(context,
+          //                 MaterialPageRoute(
+          //                     builder: (BuildContext context) => LoginScreen()),);
+          //
+          //       },
+          //
+          //    child:
+          //        Text("Logout",style: TextStyle(fontWeight: FontWeight.bold)),
+          //
+          //     style: ElevatedButton.styleFrom(primary: Colors.red[900],padding: EdgeInsets.all(10)),
+          //   ),
+          // ),
+          IconButton(onPressed: (){
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientList()));
+          }, icon: Icon(Icons.person_add),padding:EdgeInsets.only(right: 10),iconSize: 30,)
 
 
 
         ],
       ),
-      body: FutureBuilder(future: _fetch,
+      body:
+      FutureBuilder(future: _fetch,
       builder: (context,snapshot){
         if(snapshot.connectionState==ConnectionState.waiting){
           return Center(
@@ -113,15 +120,6 @@ class _HomeTempState extends State<HomeTemp> {
 
       },),
 
-
-      floatingActionButton:FloatingActionButton.extended(
-
-        onPressed: ()  {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => PatientList()));
-        },
-        label: Text("Add Appointments"),
-        icon: Icon(Icons.add),
-      ),
     );
   }
 

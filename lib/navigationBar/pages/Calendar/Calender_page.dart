@@ -31,9 +31,10 @@ class CalendarPage extends StatelessWidget {
 
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Calender'),
+          title: Text('Calender',style: TextStyle(fontFamily: 'Raleway', fontSize: 25.0,),),
+
           centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.blue[900],
 
         ),
         body: Calendar(name: name,mobile: mobile,isFromContactDetails:isFromContactDetails, patID: patID),

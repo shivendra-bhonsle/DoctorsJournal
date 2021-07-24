@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:doctors_diary/navigationBar/pages/AboutUs.dart';
+import 'package:doctors_diary/screens/authenticate/loginScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:doctors_diary/navigationBar/pages/profile_page.dart';
 import 'package:doctors_diary/navigationBar/pages/Contacts/patient_list_page.dart';
@@ -22,7 +24,7 @@ class MenuBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Drawer(
       child: Container(
-        color: Colors.blue,
+        color: Colors.blue[400],
         child: ListView(
           children: <Widget>[
             SizedBox(height: 12.0,),
@@ -33,7 +35,7 @@ class MenuBar extends StatelessWidget {
             ),
             SizedBox(height: 12.0,),
             MenuItems(
-              text: 'Patient List',
+              text: 'Contact List',
               icon: Icons.people,
               onClicked: () => selectedItem(context, 1),
             ),
@@ -71,6 +73,12 @@ class MenuBar extends StatelessWidget {
             ),
             SizedBox(height: 12.0,),
             MenuItems(
+                text: 'Log Out',
+                icon: Icons.logout,
+                onClicked: () => selectedItem(context, 6),
+            ),
+            SizedBox(height: 12.0,),
+            MenuItems(
               text: 'Quit',
               icon: Icons.power_settings_new,
               onClicked: () => exit(0)
@@ -93,7 +101,7 @@ class MenuBar extends StatelessWidget {
       onTap: onClicked,
     );
   }
-  void selectedItem(BuildContext context, int index){
+  Future<void> selectedItem(BuildContext context, int index) async {
     switch(index){
       case 0:
         Navigator.of(context).push(MaterialPageRoute(
@@ -124,6 +132,13 @@ class MenuBar extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => AboutUs(),
         ));
+        break;
+      case 6:
+        await FirebaseAuth.instance.signOut();
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+        //               Navigator.pushReplacement(context,
+        //                 MaterialPageRoute(
+        //                     builder: (BuildContext context) => LoginScreen()),);
         break;
     }
   }

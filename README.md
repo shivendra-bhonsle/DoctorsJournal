@@ -1,17 +1,18 @@
-# doctors_diary
+# Overview of the application
+## Software and SDKs
+“Doctor’s Journal” is an Android Application developed using Flutter (for UI) and Firestore by google for backend development.
 
-A new Flutter project.
+## Motivation
+In these times of pandemic, doctors are getting overloaded with work. They feel a greater need to appoint a receptionist for managing all the appointments. But the fewer people get exposed to the patients, the better it is to reduce the spread of the virus. Keeping this in mind, our team has made this app which enables the doctors to manage their patients on their own without the help of any assistance. Moreover, even the receptionists can use this application and make the management work paperless.  
 
-## Getting Started
+## Features
+1.	The app functionalities are very intuitive and any person can learn to use it in a couple of minutes.
+2.	Signing in and registering just requires phone number. The pain to remember passwords is removed as the user gets an OTP via SMS while authentication.
+3.	The doctor can schedule and cancel appointments very easily.
+4.	The doctor can get the complete overview of all appointment dates from the calendar page which helps in planning the next schedule.
+5.	The app enables the doctor to store the age of the patient with some description about him/her. Additionally, the doctor will be able to view the next and the previous appointment of any patient.
+6.	Notification for the appointment is received before the scheduled appointment time.
+7.	We have used Cloud to store the data from the app so the local memory of the doctors’ devices won’t get full with app data.
 
-This project is a starting point for a Flutter application.
+[Download APK](https://drive.google.com/file/d/1ItG9EQvceq0oOqI-VSq29UfzFMb-DLw0/view?usp=drivesdk)
 
-A few resources to get you started if this is your first Flutter project:
-
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

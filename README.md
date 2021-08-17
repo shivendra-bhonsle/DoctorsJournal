@@ -1,4 +1,4 @@
-# Overview of the application
+# Doctor's Journal : Overview of the application
 ## Software and SDKs
 “Doctor’s Journal” is an Android Application developed using Flutter (for UI) and Firestore by google for backend development.
 
@@ -13,6 +13,17 @@ In these times of pandemic, doctors are getting overloaded with work. They feel 
 5.	The app enables the doctor to store the age of the patient with some description about him/her. Additionally, the doctor will be able to view the next and the previous appointment of any patient.
 6.	Notification for the appointment is received before the scheduled appointment time.
 7.	We have used Cloud to store the data from the app so the local memory of the doctors’ devices won’t get full with app data.
+
+## UI of the App
+
+**Home Page**             |  **Menu bar**               |  **Profile**
+:-------------------------:|:-------------------------:|:-------------------------:
+<img src="/Screenshots/Home page.png" alt="Home Page" width="200"/>  |  <img src="/Screenshots/menu bar.png" alt="Menu Bar" width="200"/>  |  <img src="/Screenshots/Profile page.png" alt="Profile" width="200"/>
+**Contact List**             |  **Patient details**               |  **Calendar**
+<img src="/Screenshots/Contact list.png" alt="Contact list" width="200"/>  |  <img src="/Screenshots/Patient details.png" alt="Patient details" width="200"/>  |  <img src="/Screenshots/Calendar page.png" alt="Calendar" width="200"/>
+**Setting the time**             |  **Settings**               |  **Notification**
+<img src="/Screenshots/Set time.png" alt="Set time" width="200"/>  |  <img src="/Screenshots/Settings page.png" alt="Settings" width="200"/>  |  <img src="/Screenshots/Notification.png" alt="Notification" width="200"/>
+
 
 [Download APK](https://drive.google.com/file/d/1ItG9EQvceq0oOqI-VSq29UfzFMb-DLw0/view?usp=drivesdk)
 

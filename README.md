@@ -27,7 +27,7 @@ In these times of pandemic, doctors are getting overloaded with work. They feel 
 ## Development Team
 - Rajas Chitale
 - Varad Patwardhan
-- Shivendra Bhonsale
+- Shivendra Bhonsle
 
 ## Links
 [Video Demonstration of the application](https://drive.google.com/file/d/1RuvHrjv1eaOUOXW7tYs5Oi0ausX0zJ_h/view?usp=sharing)

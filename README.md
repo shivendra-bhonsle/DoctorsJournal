@@ -25,9 +25,9 @@ In these times of pandemic, doctors are getting overloaded with work. They feel 
 <img src="/Screenshots/Set time.png" alt="Set time" width="200"/>  |  <img src="/Screenshots/Settings page.png" alt="Settings" width="200"/>  |  <img src="/Screenshots/Notification.png" alt="Notification" width="200"/>
 
 ## Development Team
-- Rajas Chitale
-- Varad Patwardhan
-- Shivendra Bhonsle
+- [Rajas Chitale](https://github.com/rajas1310)
+- [Varad Patwardhan](https://github.com/Varad0210)
+- [Shivendra Bhonsle](https://github.com/shivendra-bhonsle)
 
 ## Links
 [Video Demonstration of the application](https://drive.google.com/file/d/1RuvHrjv1eaOUOXW7tYs5Oi0ausX0zJ_h/view?usp=sharing)
